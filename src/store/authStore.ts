@@ -26,7 +26,7 @@ export const useAuthStore = create<State & Actions>((set) => ({
     const res = await login(payload);
 
     // Extract values from the actual response
-    const user = res.data.UserValid[0];
+    const user = res.UserValid[0];
 
     const token = user.Token;
     const userID = user.UserId;
