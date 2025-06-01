@@ -5,7 +5,7 @@ export const AddSimulationCard: React.FC = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/new-simulation");
+    navigate("/simulation/new-simulation");
   };
 
   return (

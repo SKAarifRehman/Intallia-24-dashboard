@@ -71,7 +71,6 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-
   {
     path: "/user",
     element: (
@@ -118,9 +117,27 @@ const router = createBrowserRouter([
     path: "/simulation",
     element: (
       <PrivateRoute>
-        <Simulation />
+        <Outlet />
       </PrivateRoute>
     ),
+    children: [
+      {
+        index: true,
+        element: (
+          <PrivateRoute>
+            <Simulation />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "new-simulation",
+        element: (
+          <PrivateRoute>
+            <AddSimulation />
+          </PrivateRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/packages",
@@ -170,15 +187,6 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-  {
-    path: "/new-simulation",
-    element: (
-      <PrivateRoute>
-        <AddSimulation />
-      </PrivateRoute>
-    ),
-  },
-
   // {
   //   path: "/add-role",
   //   element: (
@@ -195,7 +203,6 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-
   {
     path: "/payments",
     element: (
@@ -292,7 +299,6 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-
   { path: "*", element: <NotFound /> },
 ]);
 

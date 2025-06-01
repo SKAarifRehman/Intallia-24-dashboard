@@ -1,3 +1,4 @@
+
 export interface Roles {
   UserGroupId: string;
   CompanyId: string;
@@ -18,8 +19,7 @@ export interface Payment {
   email: string;
   date: string;
   packageCategory: string;
-  amount: number; // Assuming it's a number, change if needed
-  type: "Paid" | "Free"; // Add more types if necessary
+  amount: number;
 }
 
 export interface Transaction {
@@ -83,5 +83,14 @@ export interface UserEduction {
   ModifyDate:Date;
 }
 
+export interface Simulation {
+  SimulationId: string;
+  CompanyId: string;
+  Name: string;
+  Description: string;
+  Guided: boolean;
+  CreateDate: Date;
+  Paid?: boolean;
+}
 
 
