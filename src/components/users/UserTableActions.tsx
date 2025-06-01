@@ -66,7 +66,7 @@ export const UserTableActions = ({
           <ActionButton
             variant="primary"
             className="h-9 px-4"
-            onClick={() => navigate("/add-company")}
+            onClick={() => navigate("/company/add-company")}
           >
             Add New Company
           </ActionButton>

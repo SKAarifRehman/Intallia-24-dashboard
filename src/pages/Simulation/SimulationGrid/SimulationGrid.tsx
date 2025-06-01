@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { SimulationCard } from "./SimulationCard";
 import { AddSimulationCard } from "./AddSimulationCard";
 import { useJobSimulation } from "@/queries/simulationQueries";
@@ -27,7 +27,10 @@ export const SimulationGrid: React.FC = () => {
   const cardsPerRow = 5;
 
   // Clone the simulation data to avoid modifying the original
-  const allCards = (Simulation && [...Simulation.LookupData]) || [];
+  const allCards = useMemo(
+    () => [...(Simulation?.LookupData ?? [])],
+    [Simulation],
+  );
 
   // Create chunks of 5 cards each
   const chunks: JSX.Element[] = [];

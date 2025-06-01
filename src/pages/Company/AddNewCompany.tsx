@@ -2,23 +2,23 @@ import React, { useRef } from "react";
 import CompanyForm from "./CompanyForm";
 import { MainLayout } from "../../components/layout/MainLayout";
 import SidebarActions from "../../components/users/SidebarActions";
-import { useSearchParams } from "react-router-dom";
+import { useParams , useNavigate } from "react-router-dom";
 
 const AddNewCompany: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const companyId = searchParams.get("companyId") ?? null;
+  const {companyId} = useParams();
+  const navigate = useNavigate();
   const companyFormRef = useRef<{ submit: () => void }>(null);
 
   const handleAddNewCompany = () => {
-    companyFormRef.current?.submit();
+    navigate("/company/add-company");
   };
 
   const handleSaveAndExit = () => {
-    console.log("Save & Exit clicked");
+    companyFormRef.current?.submit();
   };
 
   const handleSave = () => {
-    console.log("Save clicked");
+    companyFormRef.current?.submit();
   };
 
   const handleDelete = () => {
@@ -32,7 +32,7 @@ const AddNewCompany: React.FC = () => {
   }[] = [
     {
       variant: "primary",
-      text: `${companyId ? "Update Company" : "Add New Company"}`,
+      text: "Add New Company",
       onClick: handleAddNewCompany,
     },
     {

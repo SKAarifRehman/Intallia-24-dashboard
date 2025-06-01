@@ -87,7 +87,7 @@ export const CTable = ({ searchQuery, companies }: CTableProps) => {
       toast.error("CompanyId is undefined");
       return;
     }
-    navigate(`/add-company?companyId=${companyId}`);
+    navigate(`/company/${companyId}`);
   };
 
   const deleteCompanyMutation = useMutation({

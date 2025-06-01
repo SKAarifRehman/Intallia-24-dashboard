@@ -165,3 +165,6 @@ article:hover .cfs,
 article:hover button {
   background: linear-gradient(180deg, #0dafdc 0%, #22e9a2 100%);
 }
+:focus-visible {
+  outline: none;
+}

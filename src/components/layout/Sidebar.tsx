@@ -30,7 +30,7 @@ const screenRouteMap = {
   "Roles & Access": "/roles",
   "User Management": "/user",
   "Company": "/company",
-  "Add Company": "/add-company",
+  "Add Company": "/company/add-company",
   "Users": "/users",
   "Add User": "/add-new-user",
   "User Assignment": "/user-assignment",

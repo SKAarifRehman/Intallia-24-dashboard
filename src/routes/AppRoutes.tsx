@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Login from "@/pages/auth/Login/Login";
 import UserGroupDetails from "@/pages/RolesAndAccess/UserGroupDetails";
@@ -46,12 +46,6 @@ import InnerPage from "@/pages/InnerPage/InnerPage";
 const router = createBrowserRouter([
   { path: "/signup", element: <Signup /> },
   { path: "/login", element: <Login /> },
-
-  // {
-  //   path: "/add-company/:companyId",
-  //   element: <AddNewCompany />,
-  // },
-  // Protected routes
   {
     path: "/",
     element: (
@@ -90,9 +84,35 @@ const router = createBrowserRouter([
     path: "/company",
     element: (
       <PrivateRoute>
-        <CompanyManagement />
+        <Outlet />
       </PrivateRoute>
     ),
+    children: [
+      {
+        index: true,
+        element: (
+          <PrivateRoute>
+            <CompanyManagement />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-company",
+        element: (
+          <PrivateRoute>
+            <AddNewCompany />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ":companyId",
+        element: (
+          <PrivateRoute>
+            <AddNewCompany />
+          </PrivateRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/simulation",
@@ -158,14 +178,7 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
   },
-  {
-    path: "/add-company",
-    element: (
-      <PrivateRoute>
-        <AddNewCompany />
-      </PrivateRoute>
-    ),
-  },
+
   // {
   //   path: "/add-role",
   //   element: (
