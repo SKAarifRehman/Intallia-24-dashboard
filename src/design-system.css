@@ -168,3 +168,19 @@ article:hover button {
 :focus-visible {
   outline: none;
 }
+select:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+.bg-gradient:hover {
+background: linear-gradient(90deg, rgba(13, 175, 220, 0.2) 0%, rgba(34, 233, 162, 0.2) 100%);
+}
+.bg-gradient1 {
+  background: linear-gradient(90deg, rgba(13, 175, 220, 0.4) 0%, rgba(34, 233, 162, 0.4) 100%);
+}

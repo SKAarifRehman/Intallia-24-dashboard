@@ -1,26 +1,30 @@
-import { useState } from "react";
+import { useState} from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "./TextField";
-import { SelectField } from "./SelectField";
+import SelectField from "@/components/common/SelectField";
 import { UploadField } from "./UploadField";
 import { RichTextEditorField } from "./RichTextEditor";
 import { useToast } from "@/hooks/use-toast";
-import simulationSchema, {SimulationSchemaType as SimulationFormValues } from "@/schema/simulationSchema";
-import { Loader2Icon } from "lucide-react"
+import simulationSchema, {
+  SimulationSchemaType as SimulationFormValues,
+} from "@/schema/simulationSchema";
+import { Loader2Icon } from "lucide-react";
 
 
-export const SimulationForm = () => {
+export const SimulationForm = ({softwareOptions}) => {
   const [simulationType, setSimulationType] = useState<"guided" | "unguided">(
     "unguided",
   );
   const { toast } = useToast();
+
 
   const {
     register,
     handleSubmit,
     setValue,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<SimulationFormValues>({
     resolver: zodResolver(simulationSchema),
@@ -38,14 +42,6 @@ export const SimulationForm = () => {
     },
   });
 
-  const softwareOptions = [
-    { value: "excel", label: "MS Excel" },
-    { value: "word", label: "MS Word" },
-    { value: "sheets", label: "Google Sheets" },
-    { value: "docs", label: "Google Docs" },
-    { value: "powerpoint", label: "MS Powerpoint" },
-    { value: "slides", label: "Google Slides" },
-  ];
 
   // difficultyLevel options
   const difficultyLevelOptions = [
@@ -53,7 +49,6 @@ export const SimulationForm = () => {
     { value: "intermediate", label: "Intermediate" },
     { value: "advanced", label: "Advanced" },
   ];
-
 
   const onSubmit = (data: SimulationFormValues) => {
     console.log("Form Data:", data);
@@ -115,7 +110,8 @@ export const SimulationForm = () => {
               { value: "plane3", label: "Plane 3" },
             ]}
             placeholder="Select Plane"
-            {...register("plane")}
+            value={watch("plane") || ""}
+            onChange={(val) => setValue("plane", val)}
             error={
               typeof errors?.plane?.message === "string"
                 ? errors.plane.message
@@ -165,9 +161,9 @@ export const SimulationForm = () => {
               className="w-full"
               {...register("bannerImage")}
               error={
-          typeof errors.bannerImage?.message === "string"
-            ? errors.bannerImage.message
-            : undefined
+                typeof errors.bannerImage?.message === "string"
+                  ? errors.bannerImage.message
+                  : undefined
               }
               onChange={(file) => setValue("bannerImage", file)}
             />
@@ -182,9 +178,9 @@ export const SimulationForm = () => {
               className="w-full"
               {...register("ctaImage")}
               error={
-          typeof errors.ctaImage?.message === "string"
-            ? errors.ctaImage.message
-            : undefined
+                typeof errors.ctaImage?.message === "string"
+                  ? errors.ctaImage.message
+                  : undefined
               }
               onChange={(file) => setValue("ctaImage", file)}
             />
@@ -199,9 +195,9 @@ export const SimulationForm = () => {
               className="w-full"
               {...register("cardImage")}
               error={
-          typeof errors.cardImage?.message === "string"
-            ? errors.cardImage.message
-            : undefined
+                typeof errors.cardImage?.message === "string"
+                  ? errors.cardImage.message
+                  : undefined
               }
               onChange={(file) => setValue("cardImage", file)}
             />
@@ -213,9 +209,10 @@ export const SimulationForm = () => {
             <SelectField
               label="Difficulty Level"
               required
-              className="flex-1 w-1/3"
-            options={difficultyLevelOptions}
-              {...register("difficultyLevel")}
+              className="w-full"
+              options={difficultyLevelOptions}
+              value={watch("difficultyLevel") || ""}
+              onChange={(val) => setValue("difficultyLevel", val)}
               error={
                 typeof errors.difficultyLevel?.message === "string"
                   ? errors.difficultyLevel.message
@@ -227,9 +224,10 @@ export const SimulationForm = () => {
             <SelectField
               label="Select Software"
               required
-              className="flex-1 w-1/3"
+              className="w-full"
               options={softwareOptions}
-              {...register("software")}
+              value={watch("software") || ""}
+              onChange={(val) => setValue("software", val)}
               error={
                 typeof errors.software?.message === "string"
                   ? errors.software.message

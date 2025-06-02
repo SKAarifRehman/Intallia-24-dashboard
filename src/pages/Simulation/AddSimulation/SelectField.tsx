@@ -43,7 +43,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
         } bg-white flex min-h-12 w-full gap-2 text-base text-[#7C7C80] whitespace-nowrap tracking-[-0.32px] leading-none mt-2 px-4 py-3 border-solid ${className}`}
       >
         <select
-          className={`flex-1 bg-transparent outline-none`}
+          className={`flex-1 bg-white outline-none border-none shadow-none w-full text-base text-[#444446] leading-none tracking-[-0.24px]`}
           ref={ref}
           aria-invalid={!!error}
           aria-describedby={error ? "select-error" : undefined}

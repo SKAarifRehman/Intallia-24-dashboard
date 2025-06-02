@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ContentSection } from "@/pages/Simulation/AddSimulation/ContentSection";
 import {
   SimulationDetails,
@@ -7,11 +7,22 @@ import {
 } from "@/pages/Simulation/AddSimulation/SimulationDetails";
 import { SimulationForm } from "@/pages/Simulation/AddSimulation/SimulationForm";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { useSoftware } from "@/queries/simulationQueries";
 
 const AddSimulation = () => {
-  const [taskCounts, setTaskCounts] = useState<TaskCounts>(
-    getInitialTaskCounts(),
-  );
+  const { data: Software, isLoading, isError, isSuccess } = useSoftware();
+  const [taskCounts, setTaskCounts] =
+    useState<TaskCounts>(getInitialTaskCounts);
+
+  const softwareOptions = useMemo(() => {
+    if (isSuccess && Software?.LookupData) {
+      return Software.LookupData.map((item) => ({
+        value: item.SoftwareId,
+        label: item.Name,
+      }));
+    }
+    return [];
+  }, [isSuccess, Software]);
 
   // Listen for task count changes
   useEffect(() => {
@@ -88,8 +99,8 @@ const AddSimulation = () => {
             </div>
 
             <div className="mt-1.5  lg:w-3/4  ">
-              <SimulationForm />
-              <SimulationDetails />
+              <SimulationForm softwareOptions={softwareOptions} />
+              <SimulationDetails softwareOptions={softwareOptions} />
             </div>
           </div>
         </div>

@@ -31,18 +31,11 @@ export const getRoleById = (payload) => api.post("/GetUserGroup", payload);
 export const createRole = (payload) => api.post("/AddUserGroup", payload);
 export const updateRole = (payload) => api.post("/UpdateUserGroup", payload);
 
-// // EmailConfiguration
-// export const getEmailConfigurationById = (payload) => api.post("/GetEmailConfiguration", payload);
-// export const addEmailConfiguration = (payload) => api.post("/AddEmailConfiguration", payload);
-// export const updateEmailConfiguration = (payload) => api.post("/UpdateEmailConfiguration", payload);
-// export const deleteEmailConfiguration = (payload) => api.post("/DeleteEmailConfiguration", payload);
 
-// // EmailDraftContent
-// export const getEmailDraftContentById = (payload) =>
-//   api.post("/GetEmailDraftContent", payload);
-// export const addEmailDraftContent = (payload) =>
-//   api.post("/AddEmailDraftContent", payload);
-// export const updateEmailDraftContent = (payload) =>
-//   api.post("/UpdateEmailDraftContent", payload);
-// export const deleteEmailDraftContent = (payload) =>
-//   api.post("/DeleteEmailDraftContent", payload);
+//Simulation API
+
+//Section API
+export const getSectionById = (payload) => api.post("/GetSection", payload);
+export const addSection = (payload) => api.post("/AddSection", payload);
+export const updateSection = (payload) => api.post("/UpdateSection", payload);
+export const deleteSection = (payload) => api.post("/DeleteSection", payload);

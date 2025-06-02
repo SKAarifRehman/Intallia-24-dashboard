@@ -3,7 +3,7 @@ import { getInitialTaskCounts, TaskCounts } from "./SimulationDetails";
 
 export const ContentSection = () => {
   const [taskCounts, setTaskCounts] = useState<TaskCounts>(
-    getInitialTaskCounts(),
+    getInitialTaskCounts,
   );
 
   // This effect listens for changes to the taskCounts in local storage

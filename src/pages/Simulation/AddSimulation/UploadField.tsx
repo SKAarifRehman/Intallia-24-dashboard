@@ -15,6 +15,7 @@ interface UploadFieldProps
   placeholder?: string;
   className?: string;
   error?: string;
+  accept?: string; // File types to accept, default is image files
   value?: string | null; // External controlled value (base64)
   onChange?: (base64: string | null) => void;
 }
@@ -30,6 +31,7 @@ export const UploadField = forwardRef<HTMLInputElement, UploadFieldProps>(
       error,
       value,
       onChange,
+      accept = "image/*", // Default to image files
       ...props
     },
     ref,
@@ -48,7 +50,6 @@ export const UploadField = forwardRef<HTMLInputElement, UploadFieldProps>(
 
       if (file.size > 5 * 1024 * 1024) {
         toast({
-
           title: "File too large",
           description: "Please select a file smaller than 5MB",
           variant: "destructive",
@@ -68,7 +69,7 @@ export const UploadField = forwardRef<HTMLInputElement, UploadFieldProps>(
       toast({
         variant: "success",
         title: "File selected",
-        description: `${file.name} has been selected`
+        description: `${file.name} has been selected`,
       });
 
       // Allow re-selecting the same file
@@ -120,7 +121,7 @@ export const UploadField = forwardRef<HTMLInputElement, UploadFieldProps>(
           </div>
 
           <input
-            accept="image/*"
+            accept={accept}
             type="file"
             className="hidden"
             onChange={handleFileChange}
@@ -129,9 +130,7 @@ export const UploadField = forwardRef<HTMLInputElement, UploadFieldProps>(
           />
         </label>
 
-        {error && (
-          <span className="text-[#FF3A3A] text-xs mt-1">{error}</span>
-        )}
+        {error && <span className="text-[#FF3A3A] text-xs mt-1">{error}</span>}
       </div>
     );
   },
