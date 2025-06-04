@@ -62,15 +62,14 @@ const AddSimulation = () => {
 
             <div className="flex gap-1.5 flex-wrap max-md:max-w-full">
               <div className="flex items-center gap-[19px] text-[17px] text-[#06B2E1] font-medium text-center tracking-[-0.41px] leading-none flex-wrap grow shrink basis-auto max-md:max-w-full">
-                <button className="bg-[rgba(6,178,225,1)] self-stretch text-white font-semibold my-auto px-4 py-2 rounded-[48px]">
-                  Add New Simulation
-                </button>
                 <button className="border self-stretch my-auto px-4 py-2 rounded-[48px] border-[rgba(6,178,225,1)] border-solid">
                   Save & Exit
                 </button>
+
                 <button className="border self-stretch whitespace-nowrap my-auto px-4 py-2 rounded-[48px] border-[rgb(6,178,225)] border-solid">
                   Save
                 </button>
+
                 <button className="border border-[color:var(--alerts-red,#FF3A3A)] self-stretch text-[#FF3A3A] whitespace-nowrap my-auto px-4 py-2 rounded-[48px] border-solid">
                   Delete
                 </button>
@@ -99,7 +98,7 @@ const AddSimulation = () => {
             </div>
 
             <div className="mt-1.5  lg:w-3/4  ">
-              <SimulationForm softwareOptions={softwareOptions} />
+              <SimulationForm />
               <SimulationDetails softwareOptions={softwareOptions} />
             </div>
           </div>

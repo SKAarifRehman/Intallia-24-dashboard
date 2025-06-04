@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "./TextField";
@@ -10,14 +10,17 @@ import simulationSchema, {
   SimulationSchemaType as SimulationFormValues,
 } from "@/schema/simulationSchema";
 import { Loader2Icon } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { useAddJobSimulation } from "@/queries/simulationQueries";
 
 
-export const SimulationForm = ({softwareOptions}) => {
+export const SimulationForm = () => {
   const [simulationType, setSimulationType] = useState<"guided" | "unguided">(
     "unguided",
   );
+  const { userID, companyId } = useAuthStore((state) => state);
+  const addJobSimulation = useAddJobSimulation();
   const { toast } = useToast();
-
 
   const {
     register,
@@ -28,20 +31,19 @@ export const SimulationForm = ({softwareOptions}) => {
     formState: { errors, isSubmitting },
   } = useForm<SimulationFormValues>({
     resolver: zodResolver(simulationSchema),
-    defaultValues: {
-      plane: "",
-      simulationName: "",
-      cardDescription: "",
-      bannerImage: undefined,
-      ctaImage: undefined,
-      cardImage: undefined,
-      difficultyLevel: "",
-      software: "",
-      tags: "",
-      description: "",
-    },
+    // defaultValues: {
+    //   plane: "",
+    //   simulationName: "",
+    //   cardDescription: "",
+    //   bannerImage: "",
+    //   ctaImage: "",
+    //   cardImage: "",
+    //   difficultyLevel: "",
+    //   priorityLevel: "",
+    //   tags: "",
+    //   description: "",
+    // },
   });
-
 
   // difficultyLevel options
   const difficultyLevelOptions = [
@@ -50,16 +52,59 @@ export const SimulationForm = ({softwareOptions}) => {
     { value: "advanced", label: "Advanced" },
   ];
 
-  const onSubmit = (data: SimulationFormValues) => {
-    console.log("Form Data:", data);
-    toast({
-      variant: "success",
-      title: "Form submitted",
-      description: "Your simulation has been saved successfully",
-    });
-    // handle form data here
+  const onSubmit = async (formData: SimulationFormValues) => {
+    try {
+      const payload = {
+        JSON: JSON.stringify({
+          Header: [
+            {
+              SimulationId: "",
+              CompanyId: companyId,
+              Name: formData.simulationName,
+              CardDescription: formData.cardDescription,
+              BannerImage: formData.bannerImage,
+              CTAImage: formData.ctaImage,
+              CardImage: formData.cardImage,
+              DefficultyLevel: formData.difficultyLevel,
+              Plane: formData.plane,
+              PriorityLevel: formData.priorityLevel,
+              Tags: formData.tags,
+              Description: formData.description,
+              Guided: simulationType,
+              CreateBy: userID,
+              CreateDate: new Date().toISOString(),
+              ModifyBy: userID,
+              ModifyDate: new Date().toISOString(),
+              ...Array.from({ length: 15 }, (_, i) => ({
+                [`Intallia${i + 1}`]: null,
+              })).reduce((acc, curr) => ({ ...acc, ...curr }), {}),
+            },
+          ],
+          Response: [
+            {
+              ResponseText: "",
+              ErrorCode: "",
+            },
+          ],
+        }),
+      };
+      // Call the mutation to add the job simulation
+      const res = await addJobSimulation.mutateAsync(payload);
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save simulation.",
+        variant: "destructive",
+      });
+    }
   };
 
+  const priorityLevelOptions = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+  ];
   return (
     <div className="shadow-[0px_3.5px_5.5px_0px_rgba(0,0,0,0.04)] bg-white w-[93%] pt-[50px] pb-[27px] px-[37px] rounded-[15px] ">
       <div className="flex items-stretch gap-5 flex-wrap justify-between mr-[26px] ">
@@ -222,15 +267,15 @@ export const SimulationForm = ({softwareOptions}) => {
           </div>
           <div className="flex-1 w-1/3">
             <SelectField
-              label="Select Software"
+              label="Priority Level"
               required
               className="w-full"
-              options={softwareOptions}
-              value={watch("software") || ""}
-              onChange={(val) => setValue("software", val)}
+              options={priorityLevelOptions}
+              value={watch("priorityLevel") || ""}
+              onChange={(val) => setValue("priorityLevel", val)}
               error={
-                typeof errors.software?.message === "string"
-                  ? errors.software.message
+                typeof errors.priorityLevel?.message === "string"
+                  ? errors.priorityLevel.message
                   : undefined
               }
             />

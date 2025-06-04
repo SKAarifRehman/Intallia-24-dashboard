@@ -1,9 +1,8 @@
-import axios from 'axios';
 import api from './axios';
 
 // Auth
 export const login = (payload) => api.post("/Login", payload);
-export const logOut = (payload) => api.post("/LogOut", payload);
+export const logout = () => api.post("/LogOut");
 
 //Screens
 export const getScreen = (payload) => api.post("/GETLookupData", payload);
@@ -33,6 +32,10 @@ export const updateRole = (payload) => api.post("/UpdateUserGroup", payload);
 
 
 //Simulation API
+export const getJobSimulationById = (payload) => api.post("/GetJobSimulation", payload)
+export const addJobSimulation = (payload) => api.post("/AddJobSimulation", payload)
+export const updateJobSimulation = (payload) => api.post("/UpdateJobSimulation", payload)
+export const deleteJobSimulation = (payload) => api.post("/DeleteJobSimulation", payload);
 
 //Section API
 export const getSectionById = (payload) => api.post("/GetSection", payload);

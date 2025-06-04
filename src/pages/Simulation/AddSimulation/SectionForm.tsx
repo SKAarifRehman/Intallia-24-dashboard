@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import SelectField from "@/components/common/SelectField";
 import { UploadField } from "./UploadField";
+import { useAuthStore } from "@/store/authStore";
 
 // Define your zod schema
 const schema = z.object({
@@ -14,6 +15,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function SectionForm({ softwareOptions }) {
+  const { userID, companyId } = useAuthStore((state) => state);
+
   const {
     control,
     handleSubmit,
@@ -22,11 +25,46 @@ export function SectionForm({ softwareOptions }) {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      software: "",
+      studentFile: null,
+      masterJson: null,
+    },
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (formData: FormData) => {
     // handle form data here
-    console.log(data);
+    const payload = {
+      JSON: JSON.stringify({
+        Header: [
+          {
+            SectionId: "",
+            SimulationId: "JS1",
+            SoftwareId: formData.software,
+            Title: formData.software? softwareOptions[formData.software]?.label : "",
+            Order: "1",
+            Link: "",
+            StudentFile: formData.studentFile,
+            JsonFile: formData.masterJson,
+            CompanyId: companyId,
+            CreateBy: userID,
+            CreateDate: new Date().toISOString(),
+            ModifyBy: userID,
+            ModifyDate: new Date().toISOString(),
+            ...Array.from({ length: 15 }, (_, i) => ({
+              [`Intallia${i + 1}`]: null,
+            })).reduce((acc, curr) => ({ ...acc, ...curr }), {}),
+          },
+        ],
+        Response: [
+          {
+            ResponseText: "",
+            ErrorCode: "",
+          },
+        ],
+      }),
+    };
+    console.log(formData);
   };
 
   return (

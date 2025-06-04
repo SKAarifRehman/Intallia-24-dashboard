@@ -8,7 +8,7 @@ const simulationSchema = z.object({
   ctaImage: z.any(),
   cardImage: z.any(),
   difficultyLevel: z.string().min(1, "Difficulty Level is required"),
-  software: z.string().min(1, "Software is required"),
+  priorityLevel: z.string().min(1, "priorityLevel is required"),
   tags: z.string().min(1, "Tags are required"),
   description: z.string().min(1, "Description is required"),
 });
