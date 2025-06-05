@@ -137,6 +137,14 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path: ":simulationId",
+        element: (
+          <PrivateRoute>
+            <AddSimulation />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   {

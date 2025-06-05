@@ -88,9 +88,47 @@ export interface Simulation {
   CompanyId: string;
   Name: string;
   Description: string;
+  CardDescription: string;
+  BannerImage: string;
+  CTAImage: string;
+  CardImage: string;
+  DefficultyLevel: string;
+  Plane: string;
+  PriorityLevel: string;
+  Tags: string;
+  CreateBy?: string;
+  ModifyBy?: string;
+  ModifyDate?: Date;
+  CreateDate?: Date;
   Guided: boolean;
-  CreateDate: Date;
-  Paid?: boolean;
 }
 
+export interface Task {
+  id: string;
+  description: string;
+  sheetName?: string;
+  cellLocation?: string;
+  selectType?: "Cell" | "Range";
+  fromRange?: string;
+  toRange?: string;
+  skillName?: string;
+  skillScore?: string;
+}
 
+export type SoftwareType =
+  | "MS Excel"
+  | "MS Word"
+  | "Google Sheets"
+  | "Google Docs"
+  | "MS Powerpoint"
+  | "Google Slides";
+
+export interface SoftwareSection {
+  id: string;
+  software: SoftwareType;
+  tasks: Task[];
+}
+
+export interface TaskCounts {
+  [key: string]: number;
+}

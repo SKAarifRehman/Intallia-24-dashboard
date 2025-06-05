@@ -1,26 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "./TextField";
 import SelectField from "@/components/common/SelectField";
 import { UploadField } from "./UploadField";
 import { RichTextEditorField } from "./RichTextEditor";
-import { useToast } from "@/hooks/use-toast";
 import simulationSchema, {
   SimulationSchemaType as SimulationFormValues,
 } from "@/schema/simulationSchema";
 import { Loader2Icon } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useAddJobSimulation } from "@/queries/simulationQueries";
+import { useNavigate } from "react-router-dom";
+import { Simulation } from "@/types";
 
+interface SimulationFormProps {
+  simulation?: Simulation;
+}
 
-export const SimulationForm = () => {
+export const SimulationForm = ({simulation}:SimulationFormProps) => {
+  const navigate = useNavigate();
   const [simulationType, setSimulationType] = useState<"guided" | "unguided">(
     "unguided",
   );
   const { userID, companyId } = useAuthStore((state) => state);
   const addJobSimulation = useAddJobSimulation();
-  const { toast } = useToast();
 
   const {
     register,
@@ -31,18 +35,18 @@ export const SimulationForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<SimulationFormValues>({
     resolver: zodResolver(simulationSchema),
-    // defaultValues: {
-    //   plane: "",
-    //   simulationName: "",
-    //   cardDescription: "",
-    //   bannerImage: "",
-    //   ctaImage: "",
-    //   cardImage: "",
-    //   difficultyLevel: "",
-    //   priorityLevel: "",
-    //   tags: "",
-    //   description: "",
-    // },
+    defaultValues: {
+      plane: "",
+      simulationName: "",
+      cardDescription: "",
+      bannerImage: "",
+      ctaImage: "",
+      cardImage: "",
+      difficultyLevel: "",
+      priorityLevel: "",
+      tags: "",
+      description: "",
+    },
   });
 
   // difficultyLevel options
@@ -53,7 +57,6 @@ export const SimulationForm = () => {
   ];
 
   const onSubmit = async (formData: SimulationFormValues) => {
-    try {
       const payload = {
         JSON: JSON.stringify({
           Header: [
@@ -90,14 +93,9 @@ export const SimulationForm = () => {
       };
       // Call the mutation to add the job simulation
       const res = await addJobSimulation.mutateAsync(payload);
-
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save simulation.",
-        variant: "destructive",
-      });
-    }
+      if (res.ErrorCode === "0") {
+        navigate(`/simulation/${res.Header[0].SimulationId}`);
+      }
   };
 
   const priorityLevelOptions = [
@@ -105,6 +103,26 @@ export const SimulationForm = () => {
     { value: "medium", label: "Medium" },
     { value: "high", label: "High" },
   ];
+
+ useEffect(() => {
+    if (simulation) {
+      setValue("simulationName", simulation.Name || "");
+      setValue("cardDescription", simulation.CardDescription || "");
+      setValue("bannerImage", simulation.BannerImage || "");
+      setValue("ctaImage", simulation.CTAImage || "");
+      setValue("cardImage", simulation.CardImage || "");
+      setValue("difficultyLevel", simulation.DefficultyLevel || "");
+      setValue("plane", simulation.Plane || "");
+      setValue("priorityLevel", simulation.PriorityLevel || "");
+      setValue("tags", simulation.Tags || "");
+      setValue("description", simulation.Description || "");
+    }
+
+ }, [simulation])
+
+
+
+
   return (
     <div className="shadow-[0px_3.5px_5.5px_0px_rgba(0,0,0,0.04)] bg-white w-[93%] pt-[50px] pb-[27px] px-[37px] rounded-[15px] ">
       <div className="flex items-stretch gap-5 flex-wrap justify-between mr-[26px] ">

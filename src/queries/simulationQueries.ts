@@ -1,4 +1,6 @@
-import { getScreen, addSection, addJobSimulation } from "@/http/api.js";
+import { SimulationGrid } from '@/pages/Simulation/SimulationGrid/SimulationGrid';
+import { Simulation } from '@/types';
+import { getScreen, addSection, addJobSimulation, getJobSimulationById } from "@/http/api.js";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -35,12 +37,29 @@ export function useAddJobSimulation() {
   });
 }
 
+// get Simulation data by SimulationId
+export function useSimulationData(SimulationId: string, CompanyId: string) {
+  return useQuery({
+    queryKey: ["JobSimulations", SimulationId],
+    queryFn: () =>
+      getJobSimulationById({
+        JSON: JSON.stringify({
+          Header: [{ SimulationId, CompanyId }],
+          Response: [{ ResponseText: "", ErrorCode: "" }],
+        }),
+      }),
+    enabled: !!(SimulationId && CompanyId),
+    retry: 2,
+  });
+}
+
+
 
 //Section Queries
 export function useAddSection() {
   return useMutation({
-    mutationFn: async (data) => {
-        const result = await addSection(data);
+    mutationFn: async (payload: { JSON: string }) => {
+      const result = await addSection(payload);
         return result;
     },
     onSuccess: (data) => {

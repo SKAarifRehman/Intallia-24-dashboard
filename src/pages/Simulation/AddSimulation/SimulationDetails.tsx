@@ -1,61 +1,22 @@
-import { useState, useEffect } from "react";
-import { SelectField } from "./SelectField";
-import { UploadField } from "./UploadField";
-import { TextField } from "./TextField";
+import { useState, useEffect, useMemo } from "react";
 import { TaskForm } from "./TaskForm";
 import { useToast } from "@/hooks/use-toast";
-import { X, Plus, Save } from "lucide-react";
+import { X, Save } from "lucide-react";
 import { SectionForm } from "./SectionForm";
+import { useSoftware } from "@/queries/simulationQueries";
+import { initialTaskCounts } from "@/constants/simulationConstants";
+import { Task, SoftwareSection, TaskCounts, SoftwareType } from "@/types";
 
-type SoftwareType =
-  | "MS Excel"
-  | "MS Word"
-  | "Google Sheets"
-  | "Google Docs"
-  | "MS Powerpoint"
-  | "Google Slides";
 
-interface Task {
-  id: string;
-  description: string;
-  sheetName?: string;
-  cellLocation?: string;
-  selectType?: "Cell" | "Range";
-  fromRange?: string;
-  toRange?: string;
-  skillName?: string;
-  skillScore?: string;
-}
-
-interface SoftwareSection {
-  id: string;
-  software: SoftwareType;
-  tasks: Task[];
-}
-
-// Create a type for tracking tasks by software
-export interface TaskCounts {
-  [key: string]: number;
-}
-
-// Create a context to share the task counts
-export const getInitialTaskCounts = {
-  "MS Excel": 0,
-  "MS Word": 0,
-  "Google Sheets": 0,
-  "Google Docs": 0,
-  "MS Powerpoint": 0,
-  "Google Slides": 0,
-};
-
-export const SimulationDetails = ({softwareOptions}) => {
+export const SimulationDetails = () => {
+  const { data: Software, isSuccess } = useSoftware();
   const { toast } = useToast();
   const [sections, setSections] = useState<SoftwareSection[]>([]);
   const [selectedSoftware, setSelectedSoftware] = useState<SoftwareType | "">(
     "",
   );
   const [taskCounts, setTaskCounts] =
-    useState<TaskCounts>(getInitialTaskCounts);
+    useState<TaskCounts>(initialTaskCounts);
 
   // Effect to dispatch task count updates
   useEffect(() => {
@@ -66,6 +27,15 @@ export const SimulationDetails = ({softwareOptions}) => {
     window.dispatchEvent(event);
   }, [taskCounts]);
 
+    const softwareOptions = useMemo(() => {
+      if (isSuccess && Software?.LookupData) {
+        return Software.LookupData.map((item) => ({
+          value: item.SoftwareId,
+          label: item.Name,
+        }));
+      }
+      return [];
+    }, [isSuccess, Software]);
 
   const handleCreateSection = () => {
     if (!selectedSoftware) {

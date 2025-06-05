@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import SelectField from "@/components/common/SelectField";
 import { UploadField } from "./UploadField";
 import { useAuthStore } from "@/store/authStore";
+import { useSimulationStore } from "@/store/simulationStore";
+import { useAddSection } from "@/queries/simulationQueries";
 
 // Define your zod schema
 const schema = z.object({
@@ -16,6 +18,8 @@ type FormData = z.infer<typeof schema>;
 
 export function SectionForm({ softwareOptions }) {
   const { userID, companyId } = useAuthStore((state) => state);
+  const { simulation } = useSimulationStore((state) => state);
+  const addSection = useAddSection();
 
   const {
     control,
@@ -32,16 +36,16 @@ export function SectionForm({ softwareOptions }) {
     },
   });
 
-  const onSubmit = (formData: FormData) => {
+  const onSubmit = async (formData: FormData) => {
     // handle form data here
     const payload = {
       JSON: JSON.stringify({
         Header: [
           {
             SectionId: "",
-            SimulationId: "JS1",
+            SimulationId: simulation?.SimulationId || "",
             SoftwareId: formData.software,
-            Title: formData.software? softwareOptions[formData.software]?.label : "",
+            Title: formData.software ? softwareOptions[formData.software]?.label : "",
             Order: "1",
             Link: "",
             StudentFile: formData.studentFile,
@@ -64,8 +68,8 @@ export function SectionForm({ softwareOptions }) {
         ],
       }),
     };
-    console.log(formData);
-  };
+    await addSection.mutateAsync(payload)
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

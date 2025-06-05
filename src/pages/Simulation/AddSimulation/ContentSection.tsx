@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { getInitialTaskCounts, TaskCounts } from "./SimulationDetails";
+import type { TaskCounts } from "@/types";
+import { initialTaskCounts } from "@/constants/simulationConstants";
 
 export const ContentSection = () => {
   const [taskCounts, setTaskCounts] = useState<TaskCounts>(
-    getInitialTaskCounts,
+    initialTaskCounts
   );
 
   // This effect listens for changes to the taskCounts in local storage

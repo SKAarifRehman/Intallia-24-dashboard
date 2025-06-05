@@ -1,38 +1,27 @@
 import { create } from "zustand";
-
+import {
+  SimulationSchemaType as SimulationFormValues,
+} from "@/schema/simulationSchema";
 // Define more explicit types for better maintainability
-type SimulationItem = Record<string, any>;
-type Section = Record<string, any>;
-type Task = Record<string, any>;
+type SimulationItem = Record<string, SimulationFormValues>;
+type Section = Record<string, unknown>;
+type Task = Record<string, unknown>;
 
 interface SimulationState {
-  simulations: SimulationItem[];
+  simulation: SimulationItem | null;
   section: Section | null;
   task: Task | null;
   setSection: (section: Section | null) => void;
   setTask: (task: Task | null) => void;
-  addSimulation: (simulation: SimulationItem) => void;
-  removeSimulation: (index: number) => void;
-  clearSimulations: () => void;
+  setSimulation: (simulation: SimulationItem | null) => void;
 }
 
 export const useSimulationStore = create<SimulationState>((set) => ({
-  simulations: [],
+  simulation: null,
   section: null,
   task: null,
 
   setSection: (section) => set({ section }),
   setTask: (task) => set({ task }),
-
-  addSimulation: (simulation) =>
-    set((state) => ({
-      simulations: [...state.simulations, simulation],
-    })),
-
-  removeSimulation: (index) =>
-    set((state) => ({
-      simulations: state.simulations.filter((_, i) => i !== index),
-    })),
-
-  clearSimulations: () => set({ simulations: [] }),
+  setSimulation: (simulation) => set({ simulation }),
 }));
