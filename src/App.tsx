@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 import router from '@/routes/AppRoutes';
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 // Query Client Configuration
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,8 +16,6 @@ const queryClient = new QueryClient({
   },
 });
 
-
-
 // Fallback Component for Lazy Loading
 const LoadingFallback = () => (
   <div className="flex items-center justify-center h-screen">
@@ -25,16 +23,16 @@ const LoadingFallback = () => (
   </div>
 );
 
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner richColors />
       <Suspense fallback={<LoadingFallback />}>
         <RouterProvider router={router} />
       </Suspense>
     </TooltipProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );
 

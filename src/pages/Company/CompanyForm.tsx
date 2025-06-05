@@ -1,29 +1,11 @@
 import { forwardRef, useImperativeHandle, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addCompany, getCompanyById, updateCompany } from "@/http/api.js";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-const companySchema = z.object({
-  companyId: z.string().min(1, "CompanyId is required"),
-  companyName: z.string().min(1, "CompanyName is required"),
-  contactPersonName: z.string().min(1, "ContactPersonName is required"),
-  phoneNumber: z.string().min(1, "PhoneNumber is required"),
-  website: z.string().url("Invalid URL"),
-  email: z.string().email("Invalid email"),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  country: z.string().min(1, "Country is required"),
-  status: z.string().min(1, "Status is required"),
-  numberOfUsers: z.string().optional(),
-  numberOfSimulations: z.string().optional(),
-});
-
-type CompanyFormValues = z.infer<typeof companySchema>;
+import companySchema, {CompanySchemaType as CompanyFormValues} from "@/schema/companySchema";
 
 const defaultValues: CompanyFormValues = {
   companyId: "",
@@ -41,9 +23,9 @@ const defaultValues: CompanyFormValues = {
   numberOfSimulations: "",
 };
 
-const buildCompanyPayload = (companyId: string | number) => {
+const updateCompanyPayload = (companyId: string | number) => {
   if (!companyId) {
-    throw new Error("Invalid companyId provided to buildCompanyPayload");
+    throw new Error("Invalid companyId provided to updateCompanyPayload");
   }
   return {
     JSON: JSON.stringify({
@@ -175,7 +157,7 @@ const CompanyForm = forwardRef<CompanyFormRef, CompanyFormProps>(
       queryKey: ["company", companyId],
       queryFn: async () => {
         if (!companyId) return null;
-        const response = await getCompanyById(buildCompanyPayload(companyId));
+        const response = await getCompanyById(updateCompanyPayload(companyId));
         const header = response?.Header;
         return Array.isArray(header) && header.length > 0 ? header[0] : null;
       },
@@ -183,8 +165,6 @@ const CompanyForm = forwardRef<CompanyFormRef, CompanyFormProps>(
       staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     });
-
-    console.log("companyData", companyData);
 
     useEffect(() => {
       if (companyData) {

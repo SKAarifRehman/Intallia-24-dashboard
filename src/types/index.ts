@@ -1,3 +1,4 @@
+
 export interface Roles {
   UserGroupId: string;
   CompanyId: string;
@@ -18,8 +19,7 @@ export interface Payment {
   email: string;
   date: string;
   packageCategory: string;
-  amount: number; // Assuming it's a number, change if needed
-  type: "Paid" | "Free"; // Add more types if necessary
+  amount: number;
 }
 
 export interface Transaction {
@@ -83,5 +83,52 @@ export interface UserEduction {
   ModifyDate:Date;
 }
 
+export interface Simulation {
+  SimulationId: string;
+  CompanyId: string;
+  Name: string;
+  Description: string;
+  CardDescription: string;
+  BannerImage: string;
+  CTAImage: string;
+  CardImage: string;
+  DefficultyLevel: string;
+  Plane: string;
+  PriorityLevel: string;
+  Tags: string;
+  CreateBy?: string;
+  ModifyBy?: string;
+  ModifyDate?: Date;
+  CreateDate?: Date;
+  Guided: boolean;
+}
 
+export interface Task {
+  id: string;
+  description: string;
+  sheetName?: string;
+  cellLocation?: string;
+  selectType?: "Cell" | "Range";
+  fromRange?: string;
+  toRange?: string;
+  skillName?: string;
+  skillScore?: string;
+}
 
+export type SoftwareType =
+  | "MS Excel"
+  | "MS Word"
+  | "Google Sheets"
+  | "Google Docs"
+  | "MS Powerpoint"
+  | "Google Slides";
+
+export interface SoftwareSection {
+  id: string;
+  software: SoftwareType;
+  tasks: Task[];
+}
+
+export interface TaskCounts {
+  [key: string]: number;
+}

@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCompany } from "@/http/api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useDeleteCompany } from "@/queries/companyQueries";
 
 const tableColumns: Column<Company>[] = [
   {
@@ -87,28 +88,10 @@ export const CTable = ({ searchQuery, companies }: CTableProps) => {
       toast.error("CompanyId is undefined");
       return;
     }
-    navigate(`/add-company?companyId=${companyId}`);
+    navigate(`/company/${companyId}`);
   };
 
-  const deleteCompanyMutation = useMutation({
-    mutationFn: async (companyId: string | number) => {
-      const payload = {
-        JSON: JSON.stringify({
-          Header: [{ CompanyId: companyId }],
-          Response: [{ ResponseText: "", ErrorCode: "" }],
-        }),
-      };
-      return await deleteCompany(payload);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["companies"] });
-      toast.success("Company deleted successfully.");
-    },
-    onError: (error) => {
-      console.error("Delete failed:", error);
-      toast.error("Failed to delete company.");
-    },
-  });
+  const deleteCompanyMutation = useDeleteCompany();
 
   const getRowActions = (company: Company) => {
     if (!company || !company.CompanyId) return null;

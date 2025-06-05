@@ -1,61 +1,22 @@
-import { useState, useEffect } from "react";
-import { SelectField } from "./SelectField";
-import { UploadField } from "./UploadField";
-import { TextField } from "./TextField";
+import { useState, useEffect, useMemo } from "react";
 import { TaskForm } from "./TaskForm";
 import { useToast } from "@/hooks/use-toast";
-import { X, Plus, Save } from "lucide-react";
+import { X, Save } from "lucide-react";
+import { SectionForm } from "./SectionForm";
+import { useSoftware } from "@/queries/simulationQueries";
+import { initialTaskCounts } from "@/constants/simulationConstants";
+import { Task, SoftwareSection, TaskCounts, SoftwareType } from "@/types";
 
-type SoftwareType =
-  | "MS Excel"
-  | "MS Word"
-  | "Google Sheets"
-  | "Google Docs"
-  | "MS Powerpoint"
-  | "Google Slides";
-
-interface Task {
-  id: string;
-  description: string;
-  sheetName?: string;
-  cellLocation?: string;
-  selectType?: "Cell" | "Range";
-  fromRange?: string;
-  toRange?: string;
-  skillName?: string;
-  skillScore?: string;
-}
-
-interface SoftwareSection {
-  id: string;
-  software: SoftwareType;
-  tasks: Task[];
-}
-
-// Create a type for tracking tasks by software
-export interface TaskCounts {
-  [key: string]: number;
-}
-
-// Create a context to share the task counts
-export const getInitialTaskCounts = (): TaskCounts => ({
-  "MS Excel": 0,
-  "MS Word": 0,
-  "Google Sheets": 0,
-  "Google Docs": 0,
-  "MS Powerpoint": 0,
-  "Google Slides": 0,
-});
 
 export const SimulationDetails = () => {
+  const { data: Software, isSuccess } = useSoftware();
   const { toast } = useToast();
   const [sections, setSections] = useState<SoftwareSection[]>([]);
   const [selectedSoftware, setSelectedSoftware] = useState<SoftwareType | "">(
     "",
   );
-  const [taskCounts, setTaskCounts] = useState<TaskCounts>(
-    getInitialTaskCounts(),
-  );
+  const [taskCounts, setTaskCounts] =
+    useState<TaskCounts>(initialTaskCounts);
 
   // Effect to dispatch task count updates
   useEffect(() => {
@@ -66,14 +27,15 @@ export const SimulationDetails = () => {
     window.dispatchEvent(event);
   }, [taskCounts]);
 
-  const softwareOptions = [
-    { value: "MS Excel", label: "MS Excel" },
-    { value: "MS Word", label: "MS Word" },
-    { value: "Google Sheets", label: "Google Sheets" },
-    { value: "Google Docs", label: "Google Docs" },
-    { value: "MS Powerpoint", label: "MS Powerpoint" },
-    { value: "Google Slides", label: "Google Slides" },
-  ];
+    const softwareOptions = useMemo(() => {
+      if (isSuccess && Software?.LookupData) {
+        return Software.LookupData.map((item) => ({
+          value: item.SoftwareId,
+          label: item.Name,
+        }));
+      }
+      return [];
+    }, [isSuccess, Software]);
 
   const handleCreateSection = () => {
     if (!selectedSoftware) {
@@ -164,46 +126,7 @@ export const SimulationDetails = () => {
             Urna a amet dis tristique suscipit. Vulputate.
           </p>
         </div>
-
-        <div className="self-stretch flex items-center gap-[40px_41px] font-normal flex-wrap mt-[30px]  ">
-          <SelectField
-            label="Select Software"
-            required
-            className="flex-1 w-[250px]"
-            value={selectedSoftware}
-            onChange={(e) =>
-              setSelectedSoftware(e.target.value as SoftwareType)
-            }
-            options={softwareOptions}
-          />
-
-          <UploadField
-            label="Upload Student File"
-            required
-            icon="https://cdn.builder.io/api/v1/image/assets/d6885eedf052436eac8c331fe6a68cb8/1c304427fca5f42895e6397e016eaaa454443eed82724c05d714aaa887b33e39?placeholderIfAbsent=true"
-            placeholder="Upload"
-            accept=".pdf,.doc,.docx,.xls,.xlsx"
-            className="w-[247px]"
-          />
-
-          <UploadField
-            label="Upload Master JSON"
-            required
-            icon="https://cdn.builder.io/api/v1/image/assets/d6885eedf052436eac8c331fe6a68cb8/35e4a924501edc645cf40e324b54fd6d577032055217641815c1e0737c31f635?placeholderIfAbsent=true"
-            placeholder="Upload JSON"
-            accept=".json"
-            className="w-[247px]"
-          />
-        </div>
-
-        <button
-          type="button"
-          className="bg-[rgba(6,178,225,1)] gap-2.5 text-xl text-white font-semibold text-start tracking-[0.38px] leading-none mt-[30px] px-8 py-4 rounded-[48px] w-[215px]"
-          onClick={handleCreateSection}
-        >
-          Create Section
-        </button>
-
+        <SectionForm softwareOptions={softwareOptions}/>
         {sections.length > 0 && (
           <div className="mt-8 space-y-6">
             {sections.map((section) => (

@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { LogOut, ChevronDown, ChevronRight } from "lucide-react";
 import axios from "axios";
+import { LogOut, ChevronDown, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import userlogo from "@/assets/super_admin.png";
 import dashbordIcon from "@/assets/Dashbord-icon.svg";
@@ -13,7 +12,9 @@ import planspackage from "@/assets/Plans & Package.svg";
 import skillmatrix from "@/assets/SkillMatrix.svg";
 import currencyDollar from "@/assets/CurrencyDollar.svg";
 import invitations from "@/assets/Invitations-.svg";
+import { useAuthStore } from "@/store/authStore";
 
+// --- Constants & Mappings ---
 const iconMap: Record<string, string> = {
   "Dashboard": dashbordIcon,
   "Roles & Access": account,
@@ -25,12 +26,12 @@ const iconMap: Record<string, string> = {
   "Payments": currencyDollar,
 };
 
-const screenRouteMap = {
+const screenRouteMap: Record<string, string> = {
   "Dashboard": "/",
   "Roles & Access": "/roles",
   "User Management": "/user",
   "Company": "/company",
-  "Add Company": "/add-company",
+  "Add Company": "/company/add-company",
   "Users": "/users",
   "Add User": "/add-new-user",
   "User Assignment": "/user-assignment",
@@ -48,77 +49,85 @@ const screenRouteMap = {
   "Preferences": "/preferences",
 };
 
+// --- Types ---
+type MenuItem = {
+  img: string;
+  label: string;
+  href: string;
+  subroutes?: MenuItem[];
+};
+
+// --- Sidebar Component ---
 export function Sidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
+  // call logout from auth authStore
+  const logout = useAuthStore((state) => state.logout);
 
-  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
+  // --- Handlers ---
   const toggleExpand = (label: string) => {
-  setExpandedItems((prev) => ({
-    ...prev,
-    [label]: !prev[label],  // toggle true/false for that label
-  }));
-};
-
-
-  const fetchMenuData = async () => {
-    try {
-      const payload = {
-        JSON: JSON.stringify({
-          Header: [{ UserGroupId: "Admin", CompanyId: "Intallia24" }],
-          Response: [{ ResponseText: "", ErrorCode: "" }],
-        }),
-      };
-
-      const response = await axios.post(
-        "http://3.6.31.102/Intallia24/api/Intallia24/GetLeftPane",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const transformMenu = (items: any[]): any[] => {
-        return items.map((item) => ({
-          img: iconMap[item.ScreenName] || account,
-          label: item.ScreenName,
-          href: screenRouteMap[item.ScreenName] || `/${item.ScreenName.toLowerCase().replace(/\s+/g, "-")}`,
-          subroutes: item.ScreenNameData ? transformMenu(item.ScreenNameData) : undefined,
-        }));
-      };
-
-      const transformed = transformMenu(response.data);
-      console.log(response.data);
-
-
-      setMenuItems([
-        {
-          img: dashbordIcon,
-          label: "Dashboard",
-          href: "/",
-        },
-        ...transformed,
-      ]);
-    } catch (error) {
-      console.error("Failed to fetch sidebar data:", error);
-    }
+    setExpandedItems((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
   };
 
+  // --- Fetch Menu Data ---
   useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        const payload = {
+          JSON: JSON.stringify({
+            Header: [{ UserGroupId: "Admin", CompanyId: "Intallia24" }],
+            Response: [{ ResponseText: "", ErrorCode: "" }],
+          }),
+        };
+
+        const response = await axios.post(
+          "http://3.6.31.102/Intallia24/api/Intallia24/GetLeftPane",
+          payload,
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        const transformMenu = (items): MenuItem[] =>
+          items.map((item) => ({
+            img: iconMap[item.ScreenName] || account,
+            label: item.ScreenName,
+            href:
+              screenRouteMap[item.ScreenName] ||
+              `/${item.ScreenName.toLowerCase().replace(/\s+/g, "-")}`,
+            subroutes: item.ScreenNameData
+              ? transformMenu(item.ScreenNameData)
+              : undefined,
+          }));
+
+        const transformed = transformMenu(response.data);
+        setMenuItems([
+          {
+            img: dashbordIcon,
+            label: "Dashboard",
+            href: "/",
+          },
+          ...transformed,
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch sidebar data:", error);
+      }
+    };
+
     fetchMenuData();
   }, []);
 
-  const renderSubroutes = (subroutes: any[], parentLabel: string = "") => {
-  return (
+  // --- Render Subroutes ---
+  const renderSubroutes = (subroutes: MenuItem[], parentLabel = "") => (
     <div className="ml-6 mt-2 space-y-1">
-      {subroutes.map((subroute: any, idx: number) => {
+      {subroutes.map((subroute, idx) => {
         const isActive =
           currentPath === subroute.href ||
-          subroute.subroutes?.some((s: any) => currentPath === s.href);
+          subroute.subroutes?.some((s) => currentPath === s.href);
 
         const isExpanded = expandedItems[subroute.label] || isActive;
 
@@ -129,9 +138,8 @@ export function Sidebar() {
               className={cn(
                 "absolute left-[-16px] w-[16px] border-l-2 border-b-2 h-[24px] border-gray-300",
                 (currentPath === subroute.href ||
-                  subroute.subroutes?.some(
-                    (sr) => currentPath === sr.href
-                  )) && "border-[#0DAFDC]"
+                  subroute.subroutes?.some((sr) => currentPath === sr.href)) &&
+                  "border-[#0DAFDC]"
               )}
             />
 
@@ -156,14 +164,14 @@ export function Sidebar() {
                 ))}
             </div>
 
-            {isExpanded && subroute.subroutes && renderSubroutes(subroute.subroutes, subroute.label)}
+            {isExpanded &&
+              subroute.subroutes &&
+              renderSubroutes(subroute.subroutes, subroute.label)}
           </div>
         );
       })}
     </div>
   );
-};
-
 
   return (
     <div className="h-screen w-64 bg-sidebar fixed left-0 top-0 border-r border-sidebar-border overflow-y-auto">
@@ -176,10 +184,11 @@ export function Sidebar() {
           {menuItems.map((item, index) => {
             const isActive =
               currentPath === item.href ||
-              item.subroutes?.some((s: any) => currentPath === s.href) ||
-              (item.subroutes && item.subroutes.some((sub: any) =>
-                sub.subroutes?.some((ss: any) => currentPath === ss.href)
-              ));
+              item.subroutes?.some((s) => currentPath === s.href) ||
+              (item.subroutes &&
+                item.subroutes.some((sub) =>
+                  sub.subroutes?.some((ss) => currentPath === ss.href)
+                ));
 
             const isExpanded = expandedItems[item.label] || isActive;
 
@@ -196,7 +205,11 @@ export function Sidebar() {
                   )}
                 >
                   <Link
-                    to={item.subroutes && item.subroutes.length > 0 ? item.subroutes[0].href : item.href}
+                    to={
+                      item.subroutes && item.subroutes.length > 0
+                        ? item.subroutes[0].href
+                        : item.href
+                    }
                     className="flex items-center gap-3 w-full"
                   >
                     {item.img && <img src={item.img} className="h-5 w-5" />}
@@ -210,13 +223,16 @@ export function Sidebar() {
                     ))}
                 </div>
 
-                {isExpanded && item.subroutes && renderSubroutes(item.subroutes, item.label)}
+                {isExpanded &&
+                  item.subroutes &&
+                  renderSubroutes(item.subroutes, item.label)}
               </div>
             );
           })}
         </nav>
       </div>
 
+      {/* User Profile & Logout */}
       <div className="absolute bottom-8 w-full px-6">
         <div className="flex items-center gap-3 px-3 py-4 border-t border-sidebar-border">
           <div className="w-10 h-18 rounded-full bg-sidebar-accent overflow-hidden">
@@ -230,7 +246,7 @@ export function Sidebar() {
           </div>
         </div>
 
-        <button className="flex items-center gap-3 px-3 py-2 w-full text-sidebar-foreground/60 hover:text-sidebar-foreground">
+        <button className="flex items-center gap-3 px-3 py-2 w-full text-sidebar-foreground/60 hover:text-sidebar-foreground" onClick={logout}>
           <LogOut className="h-5 w-5 text-red-600" />
           <span className="text-red-600 font-normal text-base/5">Logout</span>
         </button>

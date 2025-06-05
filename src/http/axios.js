@@ -22,7 +22,10 @@ const api = axios.create({
 // );
 
 api.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    console.log("axios response:", response)
+    return response.data
+  },
   (error) => {
     if (error.response && error.response.status === 401) {
       // Handle unauthorized response, e.g., logout or redirect
