@@ -30,14 +30,14 @@ export const Header: React.FC = () => {
                   alt=""
                 />
               </button>
-              <button className="justify-center items-center border border-[color:var(--grey-grey-04,#444446)] flex gap-2 text-base text-[#444446] font-normal text-center tracking-[-0.32px] leading-none pl-4 pr-2 py-2 rounded-[48px] border-solid w-auto">
+              {/* <button className="justify-center items-center border border-[color:var(--grey-grey-04,#444446)] flex gap-2 text-base text-[#444446] font-normal text-center tracking-[-0.32px] leading-none pl-4 pr-2 py-2 rounded-[48px] border-solid w-auto">
                 <span className="self-stretch my-auto">Filter By</span>
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets/4e93f2d3d72f4b58b47d979bd758d34a/970ab183fc63bec3816f49b36d23e1e5829a592da154f33540e313ef9cc4f59a?placeholderIfAbsent=true"
                   className="aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto"
                   alt=""
                 />
-              </button>
+              </button> */}
             </div>
             <div className="2/5">
               <SearchBar />

@@ -5,12 +5,11 @@ import { CTable } from "@/pages/Company/CTable";
 import { UserTableActions } from "@/components/users/UserTableActions";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getScreen } from "@/http/api.js";
 import { Company } from "@/types";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { useCompanies } from "@/queries/companyQueries";
 
 const CompanyManagement = () => {
   const navigate = useNavigate();
@@ -22,20 +21,7 @@ const CompanyManagement = () => {
     data: companies,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ["companies"],
-    queryFn: async () =>
-      await getScreen({
-        ScreenName: "CompanyMaster",
-        LookUpKey: "GetList",
-        Filter1: "",
-        Filter2: "",
-        Filter3: "",
-        Filter4: "",
-        Filter5: "",
-      }),
-    retry: 2,
-  });
+  } = useCompanies();
 
   // Filter companies by search query
   const filteredCompanies = companies?.LookupData?.filter((company: Company) => {

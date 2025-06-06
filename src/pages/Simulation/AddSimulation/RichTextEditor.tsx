@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import Quill styles
+import "react-quill/dist/quill.snow.css";
+
 interface RichTextEditorProps {
   label: string;
   required?: boolean;
   onChange?: (value: string) => void;
   defaultValue?: string;
+  error?: string;
 }
 
-// Toolbar configuration (updated)
 const toolbarConfig = [
-  [{ header: [1, 2, 3, false] }], // Heading options
-  ["bold", "italic", "underline", "strike"], // Inline styles
-  [{ list: "ordered" }, { list: "bullet" }], // Lists
-  [{ align: [] }], // Alignment buttons
-  ["blockquote", "code-block"], // Quote & Code
-  ["link", "image"], // Link and Image
-  ["undo", "redo"], // History
+  [{ header: [1, 2, 3, false] }],
+  ["bold", "italic", "underline", "strike"],
+  [{ list: "ordered" }, { list: "bullet" }],
+  [{ align: [] }],
+  ["blockquote", "code-block"],
+  ["link", "image"],
+  ["undo", "redo"],
 ];
 
 export const RichTextEditorField = ({
@@ -24,15 +25,21 @@ export const RichTextEditorField = ({
   required,
   onChange,
   defaultValue = "",
+  error,
 }: RichTextEditorProps) => {
-  const [value, setValue] = useState(defaultValue || "");
+  const [value, setValue] = useState(defaultValue);
 
   // Call onChange when the value changes
   useEffect(() => {
     if (onChange) {
       onChange(value);
     }
-  }, [value, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   return (
     <div className="w-full mt-5">
@@ -44,7 +51,7 @@ export const RichTextEditorField = ({
           <span className="text-[#FF3A3A] text-sm leading-none">*</span>
         )}
       </div>
-      <div className="rte-wrapper">
+      <div className={`rte-wrapper ${error ? "border-destructive" : ""}`}>
         <ReactQuill
           value={value}
           onChange={setValue}
@@ -67,6 +74,9 @@ export const RichTextEditorField = ({
           ]}
         />
       </div>
+      {error && (
+        <span className="text-[#FF3A3A] text-xs mt-1 block">{error}</span>
+      )}
       <style>{`
         .rte-editor .ql-editor {
           min-height: 150px;
@@ -79,6 +89,9 @@ export const RichTextEditorField = ({
         .rte-wrapper {
           border: 1px solid #E5E5EA;
           border-radius: 0.375rem;
+        }
+        .border-destructive {
+          border-color: #FF3A3A !important;
         }
       `}</style>
     </div>

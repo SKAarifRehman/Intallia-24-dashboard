@@ -1,23 +1,36 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { SimulationCard } from "./SimulationCard";
 import { AddSimulationCard } from "./AddSimulationCard";
+import { useJobSimulation } from "@/queries/simulationQueries";
 
-const simulationData = Array(14)
-  .fill(null)
-  .map((_, index) => ({
-    id: index + 1,
-    title: "Microsoft Excel",
-    description: "Lorem ipsum dolor sit amet consectetur.",
-    createdDate: "14 Jan 2024",
-    isGuided: true,
-    isPaid: true,
-  }));
+// const simulationData = Array(14)
+//   .fill(null)
+//   .map((_, index) => ({
+//     id: index + 1,
+//     title: "Microsoft Excel",
+//     description: "Lorem ipsum dolor sit amet consectetur.",
+//     createdDate: "14 Jan 2024",
+//     isGuided: true,
+//     isPaid: true,
+//   }));
 
 export const SimulationGrid: React.FC = () => {
+  // Get the simulation data
+  const {
+    data: Simulation,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useJobSimulation();
+  console.log("Simulation:", Simulation);
+
   const cardsPerRow = 5;
 
   // Clone the simulation data to avoid modifying the original
-  const allCards = [...simulationData];
+  const allCards = useMemo(
+    () => [...(Simulation?.LookupData ?? [])],
+    [Simulation],
+  );
 
   // Create chunks of 5 cards each
   const chunks: JSX.Element[] = [];

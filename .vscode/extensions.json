@@ -2,12 +2,8 @@
   "recommendations": [
     "dbaeumer.vscode-eslint", // Linting for JavaScript and TypeScript
     "esbenp.prettier-vscode", // Code formatter
-    "msjsdiag.debugger-for-chrome", // Debugging for Chrome
     "eamodio.gitlens", // Git integration
     "streetsidesoftware.code-spell-checker", // Spell checker
-    "ms-vscode-remote.remote-ssh", // Remote development over SSH
-    "ms-vscode-remote.remote-wsl", // Remote development in WSL
-    "redhat.vscode-yaml", // YAML support
     "visualstudioexptteam.vscodeintellicode", // AI-assisted code completions
     "github.vscode-pull-request-github", // GitHub integration
     "ms-vsliveshare.vsliveshare", // Live share for collaboration
