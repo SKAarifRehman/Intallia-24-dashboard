@@ -42,3 +42,9 @@ export const getSectionById = (payload) => api.post("/GetSection", payload);
 export const addSection = (payload) => api.post("/AddSection", payload);
 export const updateSection = (payload) => api.post("/UpdateSection", payload);
 export const deleteSection = (payload) => api.post("/DeleteSection", payload);
+
+//User API
+export const deleteUser = (payload) => api.post("/DeleteUserMaster", payload);
+export const getUserById = (payload) => api.post("/GetUserMaster", payload);
+export const addUser = (payload) => api.post("/AddUserMaster", payload);
+export const updateUser = (payload) => api.post("/UpdateUserMaster", payload);
