@@ -29,7 +29,11 @@ const Packages: React.FC = () => {
               <h1 className="page-heading">Packages</h1>
             </div>
 
-            <UserTableActions onSearch={setSearchQuery} />
+            <UserTableActions
+              onSearch={setSearchQuery}
+              buttonLabel="Add New Package"
+              buttonLink={() => navigate("/packages/add-new-package")}
+            />
 
             <div className="bg-white p-6 rounded-lg shadow">
               <UserTable

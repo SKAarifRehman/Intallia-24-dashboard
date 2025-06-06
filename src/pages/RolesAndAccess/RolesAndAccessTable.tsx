@@ -41,7 +41,7 @@ const RolesAndAccessTable = ({
       columns={userColumns}
       rowKey={(user) => user.UserGroupId}
       selectable
-      actions={() => <ThreeDotMenu company={undefined} />}
+      actions={() => <ThreeDotMenu />}
     />
   );
 };

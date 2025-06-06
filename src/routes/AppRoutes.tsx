@@ -14,7 +14,7 @@ import RolesAndAccess from "@/pages/RolesAndAccess/RolesAndAccess";
 
 import { AddNewUser } from "@/components/users/AddNewUser";
 import AddNewCompany from "@/pages/Company/AddNewCompany";
-import { RoleForm } from "@/pages/RolesAndAccess/RoleForm";
+//import { RoleForm } from "@/pages/RolesAndAccess/RoleForm";
 
 import Simulation from "@/pages/Simulation/Simulation";
 import AddSimulation from "@/pages/Simulation/AddSimulation/AddSimulation";
@@ -75,9 +75,35 @@ const router = createBrowserRouter([
     path: "/user",
     element: (
       <PrivateRoute>
-        <UserManagement />
+        <Outlet />
       </PrivateRoute>
     ),
+    children: [
+      {
+        index: true,
+        element: (
+          <PrivateRoute>
+            <UserManagement />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-new-user",
+        element: (
+          <PrivateRoute>
+            <AddNewUser />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ":userId",
+        element: (
+          <PrivateRoute>
+            <AddNewUser />
+          </PrivateRoute>
+        ),
+      },
+    ],
   },
   {
     path: "/company",
@@ -151,28 +177,38 @@ const router = createBrowserRouter([
     path: "/packages",
     element: (
       <PrivateRoute>
-        <Packages />
+        <Outlet />
       </PrivateRoute>
     ),
+    children: [
+      {
+        index: true,
+        element: (
+          <PrivateRoute>
+            <Packages />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "add-new-package",
+        element: (
+          <PrivateRoute>
+            <AddNewPackage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ":id",
+        element: (
+          <PrivateRoute>
+            <ViewPackage />
+          </PrivateRoute>
+        ),
+      },
+    ],
   },
   {
-    path: "/add-new-package",
-    element: (
-      <PrivateRoute>
-        <AddNewPackage />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: "/package/:id",
-    element: (
-      <PrivateRoute>
-        <ViewPackage />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: "/datascience",
+    path: "datascience",
     element: (
       <PrivateRoute>
         <DataScience />
@@ -184,14 +220,6 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <UserAssignment />
-      </PrivateRoute>
-    ),
-  },
-  {
-    path: "/add-new-user",
-    element: (
-      <PrivateRoute>
-        <AddNewUser />
       </PrivateRoute>
     ),
   },
