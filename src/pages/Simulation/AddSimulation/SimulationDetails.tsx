@@ -12,13 +12,12 @@ export const SimulationDetails = () => {
   const { data: Software, isSuccess } = useSoftware();
   const { toast } = useToast();
   const [sections, setSections] = useState<SoftwareSection[]>([]);
-  const [selectedSoftware, setSelectedSoftware] = useState<SoftwareType | "">(
-    "",
-  );
+  const [selectedSoftware, setSelectedSoftware] = useState<string>("");
+
   const [taskCounts, setTaskCounts] =
     useState<TaskCounts>(initialTaskCounts);
 
-  // Effect to dispatch task count updates
+  // Effect to dispatch task c ount updates
   useEffect(() => {
     // Dispatch the event to notify Index component
     const event = new CustomEvent("simulationTaskCountsUpdated", {
@@ -126,7 +125,11 @@ export const SimulationDetails = () => {
             Urna a amet dis tristique suscipit. Vulputate.
           </p>
         </div>
-        <SectionForm softwareOptions={softwareOptions}/>
+        <SectionForm
+          softwareOptions={softwareOptions}
+          setSelectedSoftware={setSelectedSoftware}
+          setSections={handleCreateSection}
+        />
         {sections.length > 0 && (
           <div className="mt-8 space-y-6">
             {sections.map((section) => (

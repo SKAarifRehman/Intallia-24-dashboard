@@ -16,9 +16,24 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function SectionForm({ softwareOptions }) {
+type SoftwareOptions = {
+  label: string;
+  value: string;
+};
+
+interface SectionFromProps {
+  softwareOptions: SoftwareOptions[];
+  setSelectedSoftware: (software: string) => void;
+  setSections: (section) => void; // Consider creating a proper type for sections
+}
+
+export function SectionForm({
+  softwareOptions,
+  setSelectedSoftware,
+  setSections,
+}: SectionFromProps) {
   const { userID, companyId } = useAuthStore((state) => state);
-  const { simulation } = useSimulationStore((state) => state);
+  const { simulation, setSection } = useSimulationStore((state) => state);
   const addSection = useAddSection();
 
   const {
@@ -45,7 +60,9 @@ export function SectionForm({ softwareOptions }) {
             SectionId: "",
             SimulationId: simulation?.SimulationId || "",
             SoftwareId: formData.software,
-            Title: formData.software ? softwareOptions[formData.software]?.label : "",
+            Title: formData.software
+              ? softwareOptions[formData.software]?.label
+              : "",
             Order: "1",
             Link: "",
             StudentFile: formData.studentFile,
@@ -68,8 +85,14 @@ export function SectionForm({ softwareOptions }) {
         ],
       }),
     };
-    await addSection.mutateAsync(payload)
-  }
+    await addSection.mutateAsync(payload).then((res) => {
+      console.log(res);
+      if (res) {
+        setSection(res);
+        setSections(res);
+      }
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -79,7 +102,10 @@ export function SectionForm({ softwareOptions }) {
           required
           className="w-[250px]"
           value={watch("software") || ""}
-          onChange={(val) => setValue("software", val)}
+          onChange={(val) => {
+            setValue("software", val);
+            setSelectedSoftware(val ? softwareOptions.find(option => option.value === val)?.label : "");
+          }}
           options={softwareOptions}
           error={errors.software?.message}
         />

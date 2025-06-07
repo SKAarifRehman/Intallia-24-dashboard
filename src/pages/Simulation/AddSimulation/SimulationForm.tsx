@@ -118,7 +118,7 @@ export const SimulationForm = ({simulation}:SimulationFormProps) => {
       setValue("description", simulation.Description || "");
     }
 
- }, [simulation])
+ }, [simulation, setValue])
 
 
 
