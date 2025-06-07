@@ -41,6 +41,7 @@ import { UserDashboard } from "@/pages/UserDashboard/UserDashboard";
 import CaseStudyDetail from "@/components/user dashboard/CaseStudyDetail";
 import UserPreferences from "@/pages/UserPreferences/UserPreferences";
 import InnerPage from "@/pages/InnerPage/InnerPage";
+import AddRole from "@/pages/RolesAndAccess/AddRole";
 
 // Route definitions
 const router = createBrowserRouter([
@@ -60,6 +61,14 @@ const router = createBrowserRouter([
     element: (
       <PrivateRoute>
         <RolesAndAccess />
+      </PrivateRoute>
+    ),
+  },
+  {
+    path: "/add-role",
+    element: (
+      <PrivateRoute>
+        <AddRole />
       </PrivateRoute>
     ),
   },
