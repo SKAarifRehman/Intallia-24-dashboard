@@ -88,6 +88,7 @@ const UserGroupDetails: React.FC = () => {
     fetchData();
   }, []);
 
+
   const handleToggle = (screenId: string) => {
     setEnabledScreens((prev) => ({
       ...prev,

@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import SidebarActions from "@/components/users/SidebarActions";
 import { MainLayout } from "@/components/layout/MainLayout";
-// import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { createPackage, updatePackage, getPackageById } from "@/axios/api"; // <-- Your API functions
-// import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const packageSchema = z.object({
   packageName: z.string().min(1, "Package Name is required"),
@@ -34,7 +33,8 @@ const defaultValues: PackageFormValues = {
 export const AddNewPackage: React.FC<{
   editData?: Partial<PackageFormValues>;
 }> = ({ editData }) => {
-  // const { packageId } = useParams<{ packageId: string }>();
+  const { id: packageId } = useParams();
+
   const {
     register,
     handleSubmit,
@@ -45,12 +45,7 @@ export const AddNewPackage: React.FC<{
     defaultValues: editData || defaultValues,
   });
 
-  // If you want to fetch and set edit data by id:
-  // useEffect(() => {
-  //   if (packageId) {
-  //     getPackageById(packageId).then(data => reset(data));
-  //   }
-  // }, [packageId, reset]);
+  //use react query hook to fetch package data if editData is not provided
 
   const handleAddNewPackage = async (data: PackageFormValues) => {
     try {
@@ -75,17 +70,23 @@ export const AddNewPackage: React.FC<{
     {
       variant: "primary",
       text: editData ? "Update Package" : "Add New Package",
-      onClick: () => { handleSubmit(handleAddNewPackage)(); },
+      onClick: () => {
+        handleSubmit(handleAddNewPackage)();
+      },
     },
     {
       variant: "outline",
       text: "Back",
-      onClick: () => { handleSubmit(handleAddNewPackage)(); },
+      onClick: () => {
+        handleSubmit(handleAddNewPackage)();
+      },
     },
     {
       variant: "outline",
       text: "Save",
-      onClick: () => { handleSubmit(handleAddNewPackage)(); },
+      onClick: () => {
+        handleSubmit(handleAddNewPackage)();
+      },
     },
     {
       variant: "danger",

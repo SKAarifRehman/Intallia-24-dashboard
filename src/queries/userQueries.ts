@@ -1,4 +1,4 @@
-import { getScreen, deleteUser } from "@/http/api.js";
+import { getScreen, deleteUser, getUserById, addUser } from "@/http/api.js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -52,6 +52,44 @@ export function useDeleteUser() {
     onError: (error: unknown) => {
       console.error("Delete failed:", error);
       toast.error("Failed to delete user.");
+    },
+  });
+}
+
+/**
+ * Custom hook to fetch a single user by ID.
+ */
+export function useUserById(userId?: string | number) {
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: () =>
+      getUserById({
+        JSON: JSON.stringify({
+          Header: [{ UserId: userId }],
+          Response: [{ ResponseText: "", ErrorCode: "" }],
+        }),
+      }),
+
+    enabled: !!userId, // Only run if userId is provided
+    retry: 2,
+  });
+}
+
+//aDD new user
+export function useAddUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: { JSON: string }) => {
+      return await addUser(payload);
+    },
+    onSuccess: (data) => {
+      console.log("user added successfully:", data);
+      toast.success("user added successfully");
+    },
+    onError: (error: unknown) => {
+      console.error("Add user failed:", error);
+      toast.error("Failed to add user ");
     },
   });
 }
