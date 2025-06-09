@@ -42,7 +42,7 @@ export const SimulationCard: React.FC<Simulation> = ({
               year: "numeric",
             })}
           </div>
-          {isGuided && <div className="mt-[10px] ">Guided</div>}
+          <div className="mt-[10px]">{isGuided ? "Guided" : "Unguided"}</div>
           {isPaid && <div className="mt-[10px]">Paid</div>}
         </div>
       </div>

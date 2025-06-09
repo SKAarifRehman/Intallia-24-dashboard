@@ -11,6 +11,8 @@ import { useAuthStore } from "@/store/authStore"
 
 const AddSimulation = () => {
   const { simulationId } = useParams<{ simulationId?: string }>();
+  console.log(simulationId, "simulationId from params");
+
   const { companyId } = useAuthStore((state) => state);
   const [taskCounts, setTaskCounts] = useState<TaskCounts>(initialTaskCounts);
 

@@ -18,10 +18,10 @@ interface SimulationFormProps {
   simulation?: Simulation;
 }
 
-export const SimulationForm = ({simulation}:SimulationFormProps) => {
+export const SimulationForm = ({ simulation }: SimulationFormProps) => {
   const navigate = useNavigate();
   const [simulationType, setSimulationType] = useState<"guided" | "unguided">(
-    "unguided",
+    "unguided"
   );
   const { userID, companyId } = useAuthStore((state) => state);
   const addJobSimulation = useAddJobSimulation();
@@ -56,72 +56,77 @@ export const SimulationForm = ({simulation}:SimulationFormProps) => {
     { value: "advanced", label: "Advanced" },
   ];
 
-  const onSubmit = async (formData: SimulationFormValues) => {
-      const payload = {
-        JSON: JSON.stringify({
-          Header: [
-            {
-              SimulationId: "",
-              CompanyId: companyId,
-              Name: formData.simulationName,
-              CardDescription: formData.cardDescription,
-              BannerImage: formData.bannerImage,
-              CTAImage: formData.ctaImage,
-              CardImage: formData.cardImage,
-              DefficultyLevel: formData.difficultyLevel,
-              Plane: formData.plane,
-              PriorityLevel: formData.priorityLevel,
-              Tags: formData.tags,
-              Description: formData.description,
-              Guided: simulationType,
-              CreateBy: userID,
-              CreateDate: new Date().toISOString(),
-              ModifyBy: userID,
-              ModifyDate: new Date().toISOString(),
-              ...Array.from({ length: 15 }, (_, i) => ({
-                [`Intallia${i + 1}`]: null,
-              })).reduce((acc, curr) => ({ ...acc, ...curr }), {}),
-            },
-          ],
-          Response: [
-            {
-              ResponseText: "",
-              ErrorCode: "",
-            },
-          ],
-        }),
-      };
-      // Call the mutation to add the job simulation
-      const res = await addJobSimulation.mutateAsync(payload);
-      if (res.ErrorCode === "0") {
-        navigate(`/simulation/${res.Header[0].SimulationId}`);
-      }
-  };
-
   const priorityLevelOptions = [
     { value: "low", label: "Low" },
     { value: "medium", label: "Medium" },
     { value: "high", label: "High" },
   ];
 
- useEffect(() => {
-    if (simulation) {
-      setValue("simulationName", simulation.Name || "");
-      setValue("cardDescription", simulation.CardDescription || "");
-      setValue("bannerImage", simulation.BannerImage || "");
-      setValue("ctaImage", simulation.CTAImage || "");
-      setValue("cardImage", simulation.CardImage || "");
-      setValue("difficultyLevel", simulation.DefficultyLevel || "");
-      setValue("plane", simulation.Plane || "");
-      setValue("priorityLevel", simulation.PriorityLevel || "");
-      setValue("tags", simulation.Tags || "");
-      setValue("description", simulation.Description || "");
+useEffect(() => {
+  if (simulation) {
+    setValue("simulationName", simulation.Name || "");
+    setValue("cardDescription", simulation.CardDescription || "");
+    setValue("bannerImage", simulation.BannerImage || "");
+    setValue("ctaImage", simulation.CTAImage || "");
+    setValue("cardImage", simulation.CardImage || "");
+    setValue("difficultyLevel", simulation.DefficultyLevel || "");
+    setValue("plane", simulation.Plane || "");
+    setValue("priorityLevel", simulation.PriorityLevel || "");
+    setValue("tags", simulation.Tags || "");
+    setValue("description", simulation.Description || "");
+    // Handle both boolean and string for Guided
+    if (typeof simulation.Guided === "boolean") {
+      setSimulationType(simulation.Guided ? "guided" : "unguided");
+    } else if (simulation.Guided === "guided" || simulation.Guided === "unguided") {
+      setSimulationType(simulation.Guided);
     }
+  }
+}, [simulation, setValue]);
 
- }, [simulation])
+  const onSubmit = async (formData: SimulationFormValues) => {
+    const payload = {
+      JSON: JSON.stringify({
+        Header: [
+          {
+            SimulationId: "",
+            CompanyId: companyId,
+            Name: formData.simulationName,
+            CardDescription: formData.cardDescription,
+            BannerImage: formData.bannerImage,
+            CTAImage: formData.ctaImage,
+            CardImage: formData.cardImage,
+            DefficultyLevel: formData.difficultyLevel,
+            Plane: formData.plane,
+            PriorityLevel: formData.priorityLevel,
+            Tags: formData.tags,
+            Description: formData.description,
+            Guided: simulationType === "guided",
+            CreateBy: userID,
+            CreateDate: new Date().toISOString(),
+            ModifyBy: userID,
+            ModifyDate: new Date().toISOString(),
+            ...Array.from({ length: 15 }, (_, i) => ({
+              [`Intallia${i + 1}`]: null,
+            })).reduce((acc, curr) => ({ ...acc, ...curr }), {}),
+          },
+        ],
+        Response: [
+          {
+            ResponseText: "",
+            ErrorCode: "",
+          },
+        ],
+      }),
+    };
 
+    console.log("Submitting simulation form with payload:", payload);
 
-
+    // Call the mutation to add the job simulation
+    const res = await addJobSimulation.mutateAsync(payload);
+    if (res.ErrorCode === "0") {
+      navigate(`/simulation/${res.Header[0].SimulationId}`);
+    }
+  };
 
   return (
     <div className="shadow-[0px_3.5px_5.5px_0px_rgba(0,0,0,0.04)] bg-white w-[93%] pt-[50px] pb-[27px] px-[37px] rounded-[15px] ">
@@ -139,6 +144,7 @@ export const SimulationForm = ({simulation}:SimulationFormProps) => {
                   : "border-[#AEAEB2] bg-white"
               }`}
               onClick={() => setSimulationType("guided")}
+              aria-pressed={simulationType === "guided"}
             >
               {simulationType === "guided" && (
                 <div className="bg-white w-2 h-2 rounded-[50%]" />
@@ -155,6 +161,7 @@ export const SimulationForm = ({simulation}:SimulationFormProps) => {
                   : "border-[#AEAEB2] bg-white"
               }`}
               onClick={() => setSimulationType("unguided")}
+              aria-pressed={simulationType === "unguided"}
             >
               {simulationType === "unguided" && (
                 <div className="bg-white w-2 h-2 rounded-[50%] border-[color:var(--grey-grey-04,#444446)]" />
@@ -320,7 +327,11 @@ export const SimulationForm = ({simulation}:SimulationFormProps) => {
             <RichTextEditorField
               label="Description"
               required
-              onChange={(val) => field.onChange(val)}
+              onChange={(val) => {
+                // Remove HTML tags (e.g., <p>...</p>)
+                const plainText = val.replace(/<[^>]+>/g, "").trim();
+                field.onChange(plainText);
+              }}
               error={
                 typeof fieldState.error?.message === "string"
                   ? fieldState.error.message

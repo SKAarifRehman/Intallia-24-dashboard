@@ -7,6 +7,7 @@ interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
   error?: string;
   placeholder?: string;
   className?: string;
+  selectClassName?: string; // <-- Added for custom select styling
 }
 
 export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
@@ -18,11 +19,12 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       error,
       placeholder = "Select",
       className = "",
+      selectClassName = "", // <-- Added
       ...props
     },
     ref,
   ) => (
-    <div className={`flex flex-col items-stretch `}>
+    <div className={`flex flex-col items-stretch ${className}`}>
       {(label || required) && (
         <div className="flex items-center gap-1">
           {label && (
@@ -40,10 +42,10 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
           error
             ? "border-destructive"
             : "border-[color:var(--grey-grey-00,#E5E5EA)]"
-        } bg-white flex min-h-12 w-full gap-2 text-base text-[#7C7C80] whitespace-nowrap tracking-[-0.32px] leading-none mt-2 px-4 py-3 border-solid ${className}`}
+        } bg-white flex min-h-12 w-full gap-2 text-base text-[#7C7C80] whitespace-nowrap tracking-[-0.32px] leading-none mt-2 px-4 py-3 border-solid`}
       >
         <select
-          className={`flex-1 bg-white outline-none border-none shadow-none w-full text-base text-[#444446] leading-none tracking-[-0.24px]`}
+          className={`flex-1 bg-white outline-none border-none shadow-none w-full text-base text-[#444446] leading-none tracking-[-0.24px] ${selectClassName}`}
           ref={ref}
           aria-invalid={!!error}
           aria-describedby={error ? "select-error" : undefined}
