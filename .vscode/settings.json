@@ -1,52 +1,81 @@
 {
+  // 🧹 Formatting and Linting
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modifications",
-  "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
     "source.fixAll.eslint": "explicit"
   },
-  "files.exclude": {
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/build": true
-  },
+  "editor.tabSize": 2,
+  "prettier.requireConfig": true,
   "eslint.validate": [
     "javascript",
     "javascriptreact",
     "typescript",
     "typescriptreact"
   ],
-  "prettier.requireConfig": true,
-  "editor.wordWrap": "on",
-  "editor.minimap.enabled": true,
+  // 🧠 IntelliSense and Suggestions
   "editor.suggestSelection": "first",
   "editor.quickSuggestions": {
     "other": true,
     "comments": true,
     "strings": true
   },
+  "editor.snippetSuggestions": "top",
   "editor.parameterHints.enabled": true,
+  // ✨ Editor UX
+  "editor.wordWrap": "on",
+  "editor.smoothScrolling": true,
+  "editor.minimap.enabled": true,
   "editor.autoClosingBrackets": "always",
   "editor.autoClosingQuotes": "always",
   "editor.autoSurround": "languageDefined",
-  "editor.snippetSuggestions": "top",
-  "editor.smoothScrolling": true,
+  // 💾 Files and Auto Save
   "files.autoSave": "afterDelay",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "files.associations": {
-    "*.js": "javascript",
-    "*.ts": "typescript",
-    "*.jsx": "javascriptreact",
-    "*.tsx": "typescriptreact"
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/.cache": true,
+    "**/coverage": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
-    "**/build": true
+    "**/build": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/.cache": true,
+    "**/coverage": true
   },
+  // 📁 Language Associations
+  "files.associations": {
+    "*.js": "javascript",
+    "*.ts": "typescript",
+    "*.jsx": "javascriptreact",
+    "*.tsx": "typescriptreact",
+    "*.cjs": "javascript",
+    "*.mjs": "javascript",
+    "*.json": "json",
+    "*.env.*": "dotenv"
+  },
+  // 🖥️ Terminal
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.cursorBlinking": true,
+  // 🧭 Workspace
   "workbench.editor.enablePreview": false,
-  "workbench.startupEditor": "newUntitledFile"
+  "workbench.startupEditor": "newUntitledFile",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ]
 }

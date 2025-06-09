@@ -128,6 +128,31 @@ useEffect(() => {
     }
   };
 
+  const priorityLevelOptions = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+  ];
+
+ useEffect(() => {
+    if (simulation) {
+      setValue("simulationName", simulation.Name || "");
+      setValue("cardDescription", simulation.CardDescription || "");
+      setValue("bannerImage", simulation.BannerImage || "");
+      setValue("ctaImage", simulation.CTAImage || "");
+      setValue("cardImage", simulation.CardImage || "");
+      setValue("difficultyLevel", simulation.DefficultyLevel || "");
+      setValue("plane", simulation.Plane || "");
+      setValue("priorityLevel", simulation.PriorityLevel || "");
+      setValue("tags", simulation.Tags || "");
+      setValue("description", simulation.Description || "");
+    }
+
+ }, [simulation, setValue])
+
+
+
+
   return (
     <div className="shadow-[0px_3.5px_5.5px_0px_rgba(0,0,0,0.04)] bg-white w-[93%] pt-[50px] pb-[27px] px-[37px] rounded-[15px] ">
       <div className="flex items-stretch gap-5 flex-wrap justify-between mr-[26px] ">

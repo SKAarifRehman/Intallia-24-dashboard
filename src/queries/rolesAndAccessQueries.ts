@@ -1,5 +1,5 @@
 import { useQuery, useMutation, UseQueryResult, UseMutationResult } from "@tanstack/react-query";
-import { getUserGroupScreens, createRole, deleteRole, updateRole } from "@/http/api";
+import { getScreen, createRole, deleteRole, updateRole } from "@/http/api";
 
 // Types for ParentScreen and ChildScreen
 export interface ChildScreen {
@@ -30,7 +30,7 @@ export function useUserGroupScreens(userGroupId: string, companyId: string = "In
 
   return useQuery<ParentScreen[]>({
     queryKey: ["screenGroup", userGroupId, companyId],
-    queryFn: () => getUserGroupScreens(payload),
+    queryFn: () => getScreen(payload),
     enabled: !!userGroupId,
     select: (data) => data || [],
   });

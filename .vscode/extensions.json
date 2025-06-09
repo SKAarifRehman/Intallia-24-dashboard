@@ -1,18 +1,55 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint", // Linting for JavaScript and TypeScript
+    // 🔍 Linting and Formatting
+    "dbaeumer.vscode-eslint", // Linting for JS/TS
     "esbenp.prettier-vscode", // Code formatter
-    "eamodio.gitlens", // Git integration
-    "streetsidesoftware.code-spell-checker", // Spell checker
-    "visualstudioexptteam.vscodeintellicode", // AI-assisted code completions
-    "github.vscode-pull-request-github", // GitHub integration
-    "ms-vsliveshare.vsliveshare", // Live share for collaboration
-    "gruntfuggly.todo-tree", // Highlight TODO comments
-    "mhutchie.git-graph", // Visualize Git history
-    "yzhang.markdown-all-in-one", // Markdown support
-    "formulahendry.auto-rename-tag", // Auto rename paired HTML/XML tags
-    "dsznajder.es7-react-js-snippets", // React/Redux snippets
+
+    // 🧠 IntelliSense & Snippets
+    "visualstudioexptteam.vscodeintellicode", // AI-assisted completions
+    "dsznajder.vscode-es7-javascript-react-snippets", // React/Redux snippets
     "xabikos.javascriptsnippets", // JavaScript snippets
-    "wix.vscode-import-cost" // Display import size
+
+    // 🛠️ Development Enhancements
+    "formulahendry.auto-rename-tag", // Auto rename paired tags
+    "streetsidesoftware.code-spell-checker", // Spell checker
+    "wix.vscode-import-cost", // Show import size
+    "gruntfuggly.todo-tree", // Highlight TODO comments
+    "aaron-bond.better-comments", // Improved comment highlighting
+    "editorconfig.editorconfig", // Editor config support
+
+    // 📦 Styling and Tailwind
+    "bradlc.vscode-tailwindcss", // Tailwind CSS IntelliSense
+    "ecmel.vscode-html-css", // CSS support inside HTML
+    "csstools.postcss", // PostCSS syntax support
+    "stylelint.vscode-stylelint", // Stylelint integration
+
+    // ⚙️ Environment & Config
+    "mikestead.dotenv", // .env syntax highlighting
+
+    // 🔬 Testing & Coverage
+    "orta.vscode-jest", // Jest test runner support
+    "kavod-io.vscode-jest-test-adapter", // Jest test explorer
+
+    // 🧪 React Testing Library
+    "firsttris.vscode-jest-runner", // Run specific test files/lines
+    "rangav.vscode-thunder-client", // API testing (Postman alternative)
+
+    // 🔗 Git & GitHub
+    "eamodio.gitlens", // Git insights
+    "github.vscode-pull-request-github", // GitHub PRs & issues
+
+    // 🌐 Browser Sync & Live Server
+    "ritwickdey.liveserver", // Live server preview
+    "oderwat.indent-rainbow", // Indentation visualization
+    // React Query tools
+    "rangav.vscode-thunder-client",
+    "humao.rest-client",
+    "apollographql.vscode-apollo",
+
+    // AI Code Review
+    "github.copilot",
+    "coderabbit.coderabbit",
+    "codeium.codeium",
+    "amazonwebservices.aws-toolkit-vscode"
   ]
 }

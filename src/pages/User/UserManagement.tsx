@@ -5,32 +5,12 @@ import { UserTable } from "@/components/users/UserTable";
 import { UserTableActions } from "@/components/users/UserTableActions";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getScreen } from "@/http/api.js";
-import { useQuery } from "@tanstack/react-query";
+import { exportToExcel, exportToPDF } from "@/utils";
+import { useUser } from "@/queries/userQueries";
 
 const UserManagement = () => {
   const navigate = useNavigate();
-
-  const {
-    data: users = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["User"],
-    queryFn: async () =>
-      await getScreen({
-        ScreenName: "UserMaster",
-        LookUpKey: "GetList",
-        Filter1: "",
-        Filter2: "",
-        Filter3: "",
-        Filter4: "",
-        Filter5: "",
-      }),
-    retry: 2,
-  });
-  console.log(users);
-
+  const { data: users = [] } = useUser();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,6 +19,15 @@ const UserManagement = () => {
 
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = Math.min(startIndex + usersPerPage);
+
+  //Export and Download User Data
+  const columns = ["UserId", "UserGroupId", "Email", "Phone"];
+  const body = users?.LookupData?.map((user) => ({
+    UserId: user.UserId ?? "",
+    UserGroupId: user.UserGroupId ?? "",
+    Email: user.Email ?? "",
+    Phone: user.Phone ?? "",
+  }));
 
   return (
     <MainLayout>
@@ -49,7 +38,14 @@ const UserManagement = () => {
               <h1 className="page-heading">User Management (Users)</h1>
             </div>
 
-            <UserTableActions onSearch={setSearchQuery} />
+            <UserTableActions
+              onSearch={setSearchQuery}
+              handleDownload={() => exportToPDF(columns, body, "UserList")}
+              exportInExcel={() => exportToExcel(columns, body, "UserList")}
+              buttonLink={() => navigate("/user/add-new-user")}
+              buttonLabel="Add New User"
+            />
+
             <div className="bg-white p-6 rounded-lg">
               <UserTable
                 startIndex={startIndex}

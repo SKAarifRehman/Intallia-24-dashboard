@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getUserGroupScreens, getRoleById } from "@/http/api";
+import { getScreen, getRoleById } from "@/http/api";
 import { useUpdateRole } from "@/queries/rolesAndAccessQueries";
 import SidebarActions from "@/components/users/SidebarActions";
 import { toast } from "sonner";
@@ -53,7 +53,7 @@ const UserGroupDetails: React.FC = () => {
     queryKey: ["userGroupDetails", UserGroupId],
     queryFn: async () => {
       const [screenData, permissionData] = await Promise.all([
-        getUserGroupScreens(payload!),
+        getScreen(payload!),
         getRoleById(payload!),
       ]);
       return {

@@ -115,6 +115,8 @@ const RolesAndAccess = () => {
               onSearch={setSearchQuery}
               exportInExcel={exportInExcel}
               handleDownload={handleDownloadPDF}
+              buttonLabel="Add New Role"
+              buttonLink={() => navigate("/add-role")}
             />
 
             <div className="bg-white p-6 rounded-lg">

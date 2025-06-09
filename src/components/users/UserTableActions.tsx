@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronDown, Download, Search } from "lucide-react";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import AssignSimulationForm from "@/pages/Simulation/AssignSimulation/AssignSimulationForm";
 
@@ -12,15 +12,18 @@ interface UserTableActionsProps {
   onSearch: (query: string) => void;
   handleDownload?: () => void;
   exportInExcel?: () => void;
+  buttonLink?: () => void;
+  buttonLabel?: string;
 }
 
 export const UserTableActions = ({
   onSearch,
   handleDownload,
-  exportInExcel
+  exportInExcel,
+  buttonLabel,
+  buttonLink,
 }: UserTableActionsProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
 
   return (
@@ -52,36 +55,15 @@ export const UserTableActions = ({
           <ChevronDown className="w-4 h-4" />
         </Button> */}
 
-        {location.pathname === "/user" && (
+        {!!buttonLabel && (
           <ActionButton
             variant="primary"
             className="h-9 px-4"
-            onClick={() => navigate("/add-new-user")}
+            onClick={(e) => buttonLink()}
           >
-            Add New User
+            {buttonLabel}
           </ActionButton>
         )}
-
-        {location.pathname === "/company" && (
-          <ActionButton
-            variant="primary"
-            className="h-9 px-4"
-            onClick={() => navigate("/company/add-company")}
-          >
-            Add New Company
-          </ActionButton>
-        )}
-
-        {/* {location.pathname === "/user-assignment" && (
-          <ActionButton
-            variant="primary"
-            className="h-9 px-4"
-            onClick={() => navigate("/assign-simulation")}
-          >
-            Assign Simulation
-          </ActionButton>
-        )} */}
-
         {location.pathname === "/user-assignment" && (
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
@@ -97,26 +79,6 @@ export const UserTableActions = ({
               <AssignSimulationForm onClose={() => setIsOpen(false)} />
             </DialogContent>
           </Dialog>
-        )}
-
-        {location.pathname === "/user-role-&-access" && (
-          <ActionButton
-            variant="primary"
-            className="h-9 px-4"
-            onClick={() => navigate("/add-role")}
-          >
-            Add New Role
-          </ActionButton>
-        )}
-
-        {location.pathname === "/packages" && (
-          <ActionButton
-            variant="primary"
-            className="h-9 px-4"
-            onClick={() => navigate("/add-new-package")}
-          >
-            Add New Package
-          </ActionButton>
         )}
       </div>
 
