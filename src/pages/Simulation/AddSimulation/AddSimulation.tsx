@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom"; // <-- import useLocation
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ContentSection } from "@/pages/Simulation/AddSimulation/ContentSection";
 import { SimulationDetails } from "@/pages/Simulation/AddSimulation/SimulationDetails";
@@ -11,16 +11,12 @@ import { useAuthStore } from "@/store/authStore"
 
 const AddSimulation = () => {
   const { simulationId } = useParams<{ simulationId?: string }>();
-  console.log(simulationId, "simulationId from params");
-
+  const location = useLocation(); // <-- get location
   const { companyId } = useAuthStore((state) => state);
   const [taskCounts, setTaskCounts] = useState<TaskCounts>(initialTaskCounts);
 
   const { data: simulationData } = useSimulationData(simulationId, companyId);
 
-
-
-  // Handle task count updates from SimulationDetails and notify ContentSection
   useEffect(() => {
     const handleTaskCountUpdate = (event: CustomEvent<TaskCounts>) => {
       if (event.detail) {
@@ -42,6 +38,9 @@ const AddSimulation = () => {
       );
     };
   }, []);
+
+  // Check if the route is "/simulation/new-simulation"
+  const isNewSimulation = location.pathname === "/simulation/new-simulation";
 
   return (
     <MainLayout>
@@ -87,7 +86,7 @@ const AddSimulation = () => {
             </div>
             <div className="mt-1.5 lg:w-3/4">
               <SimulationForm simulation={simulationData?.Header[0]} />
-              <SimulationDetails />
+              {!isNewSimulation && <SimulationDetails />}
             </div>
           </div>
         </div>

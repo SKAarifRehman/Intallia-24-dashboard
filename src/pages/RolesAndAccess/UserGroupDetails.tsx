@@ -31,6 +31,7 @@ interface ParentScreen {
 
 const UserGroupDetails: React.FC = () => {
   const { UserGroupId } = useParams<{ UserGroupId: string }>();
+  const storedCompanyId = localStorage.getItem("CompanyId");
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -44,7 +45,7 @@ const UserGroupDetails: React.FC = () => {
 
   const payload = {
     JSON: JSON.stringify({
-      Header: [{ UserGroupId: UserGroupId, CompanyId: "Intallia24" }],
+      Header: [{ UserGroupId: UserGroupId, CompanyId: storedCompanyId }],
       Response: [{ ResponseText: "", ErrorCode: "" }],
     }),
   };

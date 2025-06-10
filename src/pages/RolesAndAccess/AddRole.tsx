@@ -31,6 +31,7 @@ type RoleFormValues = z.infer<typeof roleSchema>;
 
 const AddRole: React.FC = () => {
   const storedUserGroupId = localStorage.getItem("userGroupId") || "";
+  const storedCompanyId = localStorage.getItem("companyId") || "Intallia24";
   const navigate = useNavigate();
   const [enabledScreens, setEnabledScreens] = useState<{ [key: string]: boolean }>({});
   const formRef = useRef<HTMLFormElement>(null);
@@ -40,7 +41,7 @@ const AddRole: React.FC = () => {
     data: rawScreenData,
     isLoading,
     isError,
-  } = useUserGroupScreens(storedUserGroupId, "Intallia24");
+  } = useUserGroupScreens(storedUserGroupId, storedCompanyId);
 
   console.log("Raw Screen Data:", rawScreenData);
 
@@ -72,7 +73,7 @@ const AddRole: React.FC = () => {
     defaultValues: {
       userGroupId: storedUserGroupId,
       userGroupType: "Admin",
-      companyId: "Intallia24",
+      companyId: storedCompanyId,
       description: "",
       permissions: defaultPermissions,
     },

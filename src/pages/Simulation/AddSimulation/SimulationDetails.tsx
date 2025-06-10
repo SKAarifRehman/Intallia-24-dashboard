@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { TaskForm } from "./TaskForm";
-import { useToast } from "@/hooks/use-toast";
 import { X, Save } from "lucide-react";
 import { initialTaskCounts } from "@/constants/simulationConstants";
+import SelectField from "@/components/common/SelectField";
 import { Task, SoftwareSection, TaskCounts, SoftwareType } from "@/types";
+import { UploadField } from "./UploadField";
+import { SectionForm } from "./SectionForm";
+import { toast } from "sooner";
 
 export const SimulationDetails = () => {
-  const { toast } = useToast();
   const [sections, setSections] = useState<SoftwareSection[]>([]);
   const [selectedSoftware, setSelectedSoftware] = useState<string>("");
-
   const [taskCounts, setTaskCounts] = useState<TaskCounts>(initialTaskCounts);
 
-  // Effect to dispatch task c ount updates
   useEffect(() => {
     const event = new CustomEvent("simulationTaskCountsUpdated", {
       detail: taskCounts,
@@ -29,23 +29,14 @@ export const SimulationDetails = () => {
     { value: "Google Slides", label: "Google Slides" },
   ];
 
-  // Prevent duplicate section for the same software
   const handleCreateSection = () => {
     if (!selectedSoftware) {
-      toast({
-        title: "Error",
-        description: "Please select a software first",
-        variant: "destructive",
-      });
+      toast.error("Error", "Please select a software first");
       return;
     }
 
     if (sections.some((section) => section.software === selectedSoftware)) {
-      toast({
-        title: "Error",
-        description: `A section for ${selectedSoftware} already exists`,
-        variant: "destructive",
-      });
+      toast.error("Error", `A section for ${selectedSoftware} already exists`);
       return;
     }
 
@@ -58,10 +49,10 @@ export const SimulationDetails = () => {
     setSections([...sections, newSection]);
     setSelectedSoftware("");
 
-    toast({
-      title: "New section created",
-      description: `A new ${selectedSoftware} section has been created successfully`,
-    });
+    toast.success(
+      "New section created",
+      `A new ${selectedSoftware} section has been created successfully`
+    );
   };
 
   const handleRemoveSection = (id: string) => {
@@ -78,10 +69,7 @@ export const SimulationDetails = () => {
 
     setSections(sections.filter((section) => section.id !== id));
 
-    toast({
-      title: "Section removed",
-      description: "The section has been removed successfully",
-    });
+    toast.info("Section removed", "The section has been removed successfully");
   };
 
   const handleAddTask = (sectionId: string, task: Task) => {
@@ -104,11 +92,16 @@ export const SimulationDetails = () => {
       };
       setTaskCounts(updatedCounts);
 
-      toast({
-        title: "Task added",
-        description: `A new task has been added to ${section.software} section`,
-      });
+      toast.success(
+        "Task added",
+        `A new task has been added to ${section.software} section`
+      );
     }
+  };
+
+  // Unified toast for file upload (to be passed to UploadField)
+  const handleFileUploadToast = (fileName: string) => {
+    toast.success("File uploaded", `${fileName} has been uploaded successfully`);
   };
 
   return (
@@ -126,49 +119,12 @@ export const SimulationDetails = () => {
           </p>
         </div>
 
-        {/* FLEX-NOWRAP for single line, gap for spacing */}
-        <div className="self-stretch flex flex-nowrap items-center gap-6 font-normal mt-[30px]">
-          <div className="flex-1 min-w-[220px] max-w-[250px]">
-            <SelectField
-              label="Select Software"
-              required
-              className="w-full"
-              value={selectedSoftware}
-              onChange={(value: string) =>
-                setSelectedSoftware(value as SoftwareType)
-              }
-              options={softwareOptions}
-            />
-          </div>
-          <div className="flex-1 min-w-[220px] max-w-[250px]">
-            <UploadField
-              label="Upload Student File"
-              required
-              icon="https://cdn.builder.io/api/v1/image/assets/d6885eedf052436eac8c331fe6a68cb8/1c304427fca5f42895e6397e016eaaa454443eed82724c05d714aaa887b33e39?placeholderIfAbsent=true"
-              placeholder="Upload"
-              accept=".pdf,.doc,.docx,.xls,.xlsx"
-              className="w-full"
-            />
-          </div>
-          <div className="flex-1 min-w-[220px] max-w-[250px]">
-            <UploadField
-              label="Upload Master JSON"
-              required
-              icon="https://cdn.builder.io/api/v1/image/assets/d6885eedf052436eac8c331fe6a68cb8/35e4a924501edc645cf40e324b54fd6d577032055217641815c1e0737c31f635?placeholderIfAbsent=true"
-              placeholder="Upload JSON"
-              accept=".json"
-              className="w-full"
-            />
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="bg-[rgba(6,178,225,1)] gap-2.5 text-xl text-white font-semibold text-start tracking-[0.38px] leading-none mt-[30px] px-8 py-4 rounded-[48px] w-[215px]"
-          onClick={handleCreateSection}
-        >
-          Create Section
-        </button>
+        <SectionForm
+          softwareOptions={softwareOptions}
+          setSelectedSoftware={setSelectedSoftware}
+          setSections={handleCreateSection}
+          onFileUploadToast={handleFileUploadToast}
+        />
 
         {sections.length > 0 && (
           <div className="mt-8 space-y-6">
@@ -213,10 +169,10 @@ export const SimulationDetails = () => {
                 <div className="px-6 py-4 flex justify-between">
                   <button
                     onClick={() => {
-                      toast({
-                        title: "Section saved",
-                        description: `The ${section.software} section has been saved`,
-                      });
+                      toast.success(
+                        "Section saved",
+                        `The ${section.software} section has been saved`
+                      );
                     }}
                     className="bg-[#06B2E1] text-white px-8 py-3 rounded-full flex items-center gap-2"
                   >

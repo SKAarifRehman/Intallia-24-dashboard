@@ -3,17 +3,6 @@ import { SimulationCard } from "./SimulationCard";
 import { AddSimulationCard } from "./AddSimulationCard";
 import { useJobSimulation } from "@/queries/simulationQueries";
 
-// const simulationData = Array(14)
-//   .fill(null)
-//   .map((_, index) => ({
-//     id: index + 1,
-//     title: "Microsoft Excel",
-//     description: "Lorem ipsum dolor sit amet consectetur.",
-//     createdDate: "14 Jan 2024",
-//     isGuided: true,
-//     isPaid: true,
-//   }));
-
 export const SimulationGrid: React.FC = () => {
   // Get the simulation data
   const {
@@ -21,8 +10,8 @@ export const SimulationGrid: React.FC = () => {
     isLoading,
     isError,
     isSuccess,
+    refetch,
   } = useJobSimulation();
-  console.log("Simulation:", Simulation);
 
   const cardsPerRow = 5;
 
@@ -51,8 +40,6 @@ export const SimulationGrid: React.FC = () => {
   // Process the remaining cards in chunks of 5
   for (let i = 4; i < allCards.length; i += cardsPerRow) {
     const rowCards = allCards.slice(i, i + cardsPerRow);
-
-    // If we have fewer than 5 cards for the last row, add dummy cards to maintain layout
     const rowIndex = Math.floor(i / cardsPerRow) + 1;
 
     chunks.push(
@@ -81,9 +68,10 @@ export const SimulationGrid: React.FC = () => {
     );
   }
 
+  // Refetch data on mount to always get the latest simulations
   useEffect(() => {
-    console.log("Rendering SimulationGrid with data:", allCards);
-  }, [allCards]);
+    refetch();
+  }, []);
 
   return <div className="flex flex-col gap-[1rem]">{chunks}</div>;
 };

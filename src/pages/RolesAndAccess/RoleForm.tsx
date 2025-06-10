@@ -42,7 +42,8 @@ const defaultValues: RoleFormValues = {
 };
 
 export const RoleForm: FC = () => {
-  const { UserGroupId: id } = useParams<{ UserGroupId: string }>();
+  const { UserGroupId: id } = useParams<{ UserGroupId: string }>();\
+  const storedCompanyId = localStorage.getItem("companyId");
   console.log(id);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -52,7 +53,7 @@ export const RoleForm: FC = () => {
     queryFn: () =>
       getRoleById({
         JSON: JSON.stringify({
-          Header: [{ UserGroupId: id, CompanyId: "Intallia24" }],
+          Header: [{ UserGroupId: id, CompanyId: storedCompanyId }],
           Response: [{ ResponseText: "", ErrorCode: "" }],
         }),
       }),

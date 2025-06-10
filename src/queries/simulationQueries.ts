@@ -18,6 +18,8 @@ export function useJobSimulation() {
         Filter5: "",
       }),
     retry: 2,
+    refetchOnMount: true,           // Refetch every time component mounts
+    refetchOnWindowFocus: true,  
   });
 }
 

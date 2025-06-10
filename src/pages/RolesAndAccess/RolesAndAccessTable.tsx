@@ -43,7 +43,6 @@ const RolesAndAccessTable = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Provide success/error handlers here!
   const deleteUserGroupMutation = useDeleteRole({
     onSuccess: () => {
       toast.success("User group deleted");
@@ -53,6 +52,7 @@ const RolesAndAccessTable = ({
       toast.error("Failed to delete user group");
     },
   });
+
   const handleEdit = (userGroupId: string) => {
     navigate(`/user-role-&-access/${userGroupId}`);
   };
@@ -68,7 +68,11 @@ const RolesAndAccessTable = ({
           },
           {
             label: "Delete",
-            onClick: () => deleteUserGroupMutation.mutate(user.UserGroupId),
+            onClick: () =>
+              deleteUserGroupMutation.mutate({
+                userGroupId: user.UserGroupId,
+                companyId: user.CompanyId,
+              }),
             className: "text-red-600 hover:bg-red-50",
           },
         ]}

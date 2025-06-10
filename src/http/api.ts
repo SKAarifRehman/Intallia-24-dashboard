@@ -30,6 +30,7 @@ export const getRoleById = (payload) => api.post("/GetUserGroup", payload);
 export const createRole = (payload) => api.post("/AddUserGroup", payload);
 export const updateRole = (payload) => api.post("/UpdateUserGroup", payload);
 export const deleteRole = (payload) => api.post("/DeleteUserGroup", payload);
+export const getUserGroupScreens = (payload) => api.post("/GetScreenGroup", payload);
 
 //Simulation API
 export const getJobSimulationById = (payload) => api.post("/GetJobSimulation", payload)
