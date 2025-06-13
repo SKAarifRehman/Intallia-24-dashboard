@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getScreen, getRoleById } from "@/http/api";
+import { getUserGroupScreens, getRoleById } from "@/http/api";
 import { useUpdateRole } from "@/queries/rolesAndAccessQueries";
 import SidebarActions from "@/components/users/SidebarActions";
 import { toast } from "sonner";
@@ -31,7 +31,7 @@ interface ParentScreen {
 
 const UserGroupDetails: React.FC = () => {
   const { UserGroupId } = useParams<{ UserGroupId: string }>();
-  const storedCompanyId = localStorage.getItem("CompanyId");
+  const storedCompanyId = localStorage.getItem("companyId");
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -50,13 +50,21 @@ const UserGroupDetails: React.FC = () => {
     }),
   };
 
+  // console.log("Payload:", payload);
+
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["userGroupDetails", UserGroupId],
     queryFn: async () => {
       const [screenData, permissionData] = await Promise.all([
-        getScreen(payload!),
+        getUserGroupScreens(payload!),
         getRoleById(payload!),
       ]);
+
+      console.log("Screen Data:", screenData);
+      console.log("Permission Data:", permissionData);
+
+
       return {
         screenData: screenData || [],
         permissionData: permissionData?.Details || [],

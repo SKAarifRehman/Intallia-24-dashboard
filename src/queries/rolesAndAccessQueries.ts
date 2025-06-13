@@ -1,3 +1,4 @@
+import { UserGroupPayload, ApiResponse } from "@/types";
 import { useQuery, useMutation, UseQueryResult, UseMutationResult, UseMutationOptions } from "@tanstack/react-query";
 import { getUserGroupScreens, createRole, deleteRole, updateRole } from "@/http/api";
 
@@ -19,16 +20,24 @@ export interface ParentScreen {
   ScreenNameData: ChildScreen[];
 }
 
-// Payload type for create/update/delete
-export interface UserGroupPayload {
-  JSON: string;
+
+
+// Types for ParentScreen and ChildScreen
+export interface ChildScreen {
+  ScreenId: string;
+  ScreenName: string;
+  ParentName: string;
+  UserGroupId: string;
+  ReadPermission: boolean;
+  WritePermission: boolean;
+  DeletePermission: boolean;
 }
 
-// API response type (customize as per your backend)
-export interface ApiResponse {
-  ResponseText?: string;
-  ErrorCode?: string;
-  [key: string]: any;
+export interface ParentScreen {
+  ScreenId: string;
+  ScreenName: string;
+  ParentName: string;
+  ScreenNameData: ChildScreen[];
 }
 
 // Query to fetch user group screens

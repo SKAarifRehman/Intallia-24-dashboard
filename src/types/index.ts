@@ -132,3 +132,13 @@ export interface SoftwareSection {
 export interface TaskCounts {
   [key: string]: number;
 }
+
+export interface UserGroupPayload {
+  JSON: string;
+}
+
+export interface ApiResponse {
+  ResponseText?: string;
+  ErrorCode?: string;
+  [key: string]: any;
+}

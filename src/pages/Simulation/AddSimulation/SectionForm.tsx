@@ -1,13 +1,15 @@
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams } from "react-router-dom";
 import SelectField from "@/components/common/SelectField";
 import { UploadField } from "./UploadField";
 import { useAuthStore } from "@/store/authStore";
 import { useSimulationStore } from "@/store/simulationStore";
 import { useAddSection } from "@/queries/simulationQueries";
+import { toast } from "sonner";
 
-// Define your zod schema
+// Zod schema for validation
 const schema = z.object({
   software: z.string().min(1, "Select software"),
   studentFile: z.any().refine((file) => !!file, "Student file is required"),
@@ -21,20 +23,23 @@ type SoftwareOptions = {
   value: string;
 };
 
-interface SectionFromProps {
+interface SectionFormProps {
   softwareOptions: SoftwareOptions[];
   setSelectedSoftware: (software: string) => void;
-  setSections: (section) => void; // Consider creating a proper type for sections
+  onCreateSection?: () => void;
+  existingSoftwareIds: string[]; // <-- Added prop for duplicate check
 }
 
 export function SectionForm({
   softwareOptions,
   setSelectedSoftware,
-  setSections,
-}: SectionFromProps) {
+  onCreateSection,
+  existingSoftwareIds,
+}: SectionFormProps) {
   const { userID, companyId } = useAuthStore((state) => state);
   const { simulation, setSection } = useSimulationStore((state) => state);
   const addSection = useAddSection();
+  const { simulationId } = useParams<{ simulationId?: string }>();
 
   const {
     control,
@@ -52,17 +57,22 @@ export function SectionForm({
   });
 
   const onSubmit = async (formData: FormData) => {
-    // handle form data here
+    // Duplicate check
+    if (existingSoftwareIds.includes(formData.software)) {
+      toast.error("This software section already exists.");
+      return;
+    }
+
     const payload = {
       JSON: JSON.stringify({
         Header: [
           {
             SectionId: "",
-            SimulationId: simulation?.SimulationId || "",
+            SimulationId: simulationId || simulation?.SimulationId || "",
             SoftwareId: formData.software,
-            Title: formData.software
-              ? softwareOptions[formData.software]?.label
-              : "",
+            Title:
+              softwareOptions.find((option) => option.value === formData.software)
+                ?.label || "",
             Order: "1",
             Link: "",
             StudentFile: formData.studentFile,
@@ -85,11 +95,14 @@ export function SectionForm({
         ],
       }),
     };
+
     await addSection.mutateAsync(payload).then((res) => {
-      console.log(res);
       if (res) {
-        setSection(res);
-        setSections(res);
+        setSection(res.data);
+        if (onCreateSection) onCreateSection();
+        toast.success("Section added successfully", {
+          description: "The section was created successfully.",
+        });
       }
     });
   };
@@ -104,7 +117,7 @@ export function SectionForm({
           value={watch("software") || ""}
           onChange={(val) => {
             setValue("software", val);
-            setSelectedSoftware(val ? softwareOptions.find(option => option.value === val)?.label : "");
+            setSelectedSoftware(val || "");
           }}
           options={softwareOptions}
           error={errors.software?.message}
@@ -119,7 +132,7 @@ export function SectionForm({
               required
               icon="https://cdn.builder.io/api/v1/image/assets/d6885eedf052436eac8c331fe6a68cb8/1c304427fca5f42895e6397e016eaaa454443eed82724c05d714aaa887b33e39?placeholderIfAbsent=true"
               placeholder="Upload"
-              accept=".pdf,.doc,.docx,.xls,.xlsx"
+              accept=".pdf,.doc,.doc,.docx,.xls,.xlsx"
               className="w-[247px]"
               value={field.value}
               onChange={field.onChange}

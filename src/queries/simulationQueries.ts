@@ -1,6 +1,6 @@
 import { SimulationGrid } from '@/pages/Simulation/SimulationGrid/SimulationGrid';
 import { Simulation } from '@/types';
-import { getScreen, addSection, addJobSimulation, getJobSimulationById } from "@/http/api.js";
+import { getScreen, addSection, addJobSimulation, getJobSimulationById, addTask } from "@/http/api.js";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -19,7 +19,7 @@ export function useJobSimulation() {
       }),
     retry: 2,
     refetchOnMount: true,           // Refetch every time component mounts
-    refetchOnWindowFocus: true,  
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -61,13 +61,14 @@ export function useSimulationData(SimulationId: string, CompanyId: string) {
 export function useAddSection() {
   return useMutation({
     mutationFn: async (payload: { JSON: string }) => {
+      console.log("Adding section with payload:", payload);
+
       const result = await addSection(payload);
-        return result;
+      return result;
     },
     onSuccess: (data) => {
-      // Handle success (e.g., show toast)
       console.log("Section added successfully:", data);
-      toast.success("Section added successfully");
+      // toast.success("Section added successfully");
     },
     onError: (error: unknown) => {
       // Handle error globally (e.g., show toast)
@@ -77,6 +78,15 @@ export function useAddSection() {
   });
 }
 
+
+export function useAddTask() {
+  return useMutation({
+    mutationFn: async (payload: { JSON: string }) => {
+      const { data } = await addTask(payload);
+      return data;
+    },
+  });
+}
 
 //Software Queries
 export function useSoftware() {

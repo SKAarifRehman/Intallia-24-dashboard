@@ -1,42 +1,18 @@
 import { useState } from "react";
-import { TextField } from "./TextField";
-import { SelectField } from "./SelectField";
-import { RichTextEditorField } from "./RichTextEditor";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Bold,
-  Italic,
-  Underline,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Image,
-  Link,
-  File,
-  Video,
-  Undo,
-  Redo,
-} from "lucide-react";
-
-interface Task {
-  id: string;
-  description: string;
-  sheetName?: string;
-  cellLocation?: string;
-  selectType?: "Cell" | "Range";
-  fromRange?: string;
-  toRange?: string;
-  skillName?: string;
-  skillScore?: string;
-  hint?: string;
-}
+import { toast } from "sonner";
+import { useAddTask } from "@/queries/simulationQueries";
+import { TaskFormExcelSheets } from "./TaskForms/TaskFormExcelSheets";
+import { TaskFormWordDocs } from "./TaskForms/TaskFormWordDocs";
+import { TaskFormPowerpointSlides } from "./TaskForms/TaskFormPowerpointSlides";
+import { X } from "lucide-react";
 
 interface TaskFormProps {
   sectionId: string;
-  software: string;
+  software: string; // this is something like 'S1'
   taskNumber: number;
-  onAddTask: (task: Task) => void;
+  onAddTask: (task: any) => void;
+  onRemove: () => void;
+  softwareOptions: { value: string; label: string }[];
 }
 
 export const TaskForm = ({
@@ -44,179 +20,195 @@ export const TaskForm = ({
   software,
   taskNumber,
   onAddTask,
+  onRemove,
+  softwareOptions,
 }: TaskFormProps) => {
-  const { toast } = useToast();
-  const [selectType, setSelectType] = useState<"Cell" | "Range">("Cell");
-  const [description, setDescription] = useState("");
-  const [sheetName, setSheetName] = useState("");
-  const [cellLocation, setCellLocation] = useState("");
-  const [fromRange, setFromRange] = useState("");
-  const [toRange, setToRange] = useState("");
-  const [skillName, setSkillName] = useState("");
-  const [skillScore, setSkillScore] = useState("");
-  const [hint, setHint] = useState("");
+  const addTaskMutation = useAddTask();
 
-  const isExcelOrSheets =
-    software === "MS Excel" || software === "Google Sheets";
+  const mappedSoftware =
+    softwareOptions.find((opt) => opt.value === software)?.label || software;
 
-  const handleSubmit = () => {
-    if (!description) {
-      toast({
-        title: "Error",
-        description: "Task Description is required",
-        variant: "destructive",
-      });
+  const [form, setForm] = useState({
+    description: "",
+    hint: "",
+    skillName: "",
+    skillScore: "",
+    sheetName: "",
+    selectType: "Cell",
+    cellLocation: "",
+    fromRange: "",
+    toRange: "",
+    taskLocation: "",
+    slideName: "",
+    objectName: "",
+  });
+
+  const handleChange = (key: string, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const buildPayload = () => {
+    const now = new Date().toISOString();
+    let header: any = {
+      TaskId: "",
+      SectionId: sectionId,
+      Order: taskNumber,
+      Description: form.description,
+      CompanyId: "Intallia24",
+      CreateBy: "Admin",
+      CreateDate: now,
+      ModifyBy: "Admin",
+      ModifyDate: now,
+      Intallia1: null,
+      Intallia2: null,
+      Intallia3: null,
+      Intallia4: null,
+      Intallia5: null,
+      Intallia6: null,
+      Intallia7: null,
+      Intallia8: null,
+      Intallia9: null,
+      Intallia10: null,
+      Intallia11: null,
+      Intallia12: null,
+      Intallia13: null,
+      Intallia14: null,
+      Intallia15: null,
+      SkillName: form.skillName,
+      SkillScore: form.skillScore,
+      Hint: form.hint,
+    };
+
+    if (mappedSoftware === "Excel" || mappedSoftware === "GoogleSheets") {
+      header = {
+        ...header,
+        SheetName: form.sheetName,
+        SelectType: form.selectType,
+        ...(form.selectType === "Cell"
+          ? { CellLocation: form.cellLocation }
+          : { FromRange: form.fromRange, ToRange: form.toRange }),
+      };
+    } else if (mappedSoftware === "Word" || mappedSoftware === "GoogleDoc") {
+      header = {
+        ...header,
+        TaskLocation: form.taskLocation,
+      };
+    } else if (mappedSoftware === "PPT" || mappedSoftware === "GoogleSlides") {
+      header = {
+        ...header,
+        SlideName: form.slideName,
+        ObjectName: form.objectName,
+      };
+    }
+
+    return {
+      JSON: JSON.stringify({
+        Header: [header],
+        Response: [{ ResponseText: "", ErrorCode: "" }],
+      }),
+    };
+  };
+
+  const handleSubmit = async () => {
+    if (!form.description || !form.skillName || !form.skillScore) {
+      toast.error("Please fill all required fields.");
       return;
     }
 
-    const newTask: Task = {
-      id: Date.now().toString(),
-      description,
-      ...(isExcelOrSheets && { sheetName }),
-      ...(isExcelOrSheets && { selectType }),
-      ...(isExcelOrSheets && selectType === "Cell" && { cellLocation }),
-      ...(isExcelOrSheets && selectType === "Range" && { fromRange, toRange }),
-      skillName,
-      skillScore,
-      hint,
-    };
+    if (
+      (mappedSoftware === "Excel" || mappedSoftware === "GoogleSheets") &&
+      (!form.sheetName ||
+        (form.selectType === "Cell" && !form.cellLocation) ||
+        (form.selectType === "Range" && (!form.fromRange || !form.toRange)))
+    ) {
+      toast.error("Please fill all required Excel fields.");
+      return;
+    }
 
-    onAddTask(newTask);
+    if (
+      (mappedSoftware === "Word" || mappedSoftware === "GoogleDoc") &&
+      !form.taskLocation
+    ) {
+      toast.error("Please fill all required Word fields.");
+      return;
+    }
 
-    // Reset form
-    setDescription("");
-    setSheetName("");
-    setCellLocation("");
-    setFromRange("");
-    setToRange("");
-    setSkillName("");
-    setSkillScore("");
-    setHint("");
+    if (
+      (mappedSoftware === "PPT" || mappedSoftware === "GoogleSlides") &&
+      (!form.slideName || !form.objectName)
+    ) {
+      toast.error("Please fill all required PPT fields.");
+      return;
+    }
+
+    try {
+      const payload = buildPayload();
+      await addTaskMutation.mutateAsync(payload);
+      toast.success("Task added successfully");
+
+      onAddTask({ ...form, id: Date.now().toString() });
+
+      setForm({
+        description: "",
+        hint: "",
+        skillName: "",
+        skillScore: "",
+        sheetName: "",
+        selectType: "Cell",
+        cellLocation: "",
+        fromRange: "",
+        toRange: "",
+        taskLocation: "",
+        slideName: "",
+        objectName: "",
+      });
+    } catch (err) {
+      toast.error("Failed to add task.");
+    }
   };
 
   return (
-    <div className="bg-[#F8F8F8] rounded-lg p-4 mb-4">
+    <div className="bg-white rounded-lg p-6 border border-[#E5E5EA] mb-4 relative">
+      {/* Remove button (top-right) */}
+      <button
+        onClick={onRemove}
+        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+        title="Remove this task"
+      >
+        <X size={18} />
+      </button>
+
       <h5 className="font-medium mb-4">Task {taskNumber}</h5>
 
-      <SelectField
-        label="Select Type"
-        value={selectType}
-        onChange={(e) => setSelectType(e.target.value as "Cell" | "Range")}
-        className="mt-4"
-      >
-        <option value="Cell">Cell</option>
-        <option value="Range">Range</option>
-      </SelectField>
-      <TextField
-        label="Task Description"
-        required
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Enter task description"
-      />
-
-      {isExcelOrSheets && (
-        <>
-          <TextField
-            label="Sheet Name"
-            required
-            value={sheetName}
-            onChange={(e) => setSheetName(e.target.value)}
-            placeholder="Enter sheet name"
-            className="mt-4"
-          />
-
-          <div className="mt-4">
-            <div className="flex items-center gap-1 mb-2 mt-4">
-              <label className="text-[#444446] text-[15px] leading-none tracking-[-0.24px]">
-                Select
-              </label>
-              <span className="text-[#FF3A3A] text-sm leading-none">*</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={selectType === "Cell"}
-                  onChange={() => setSelectType("Cell")}
-                  className="accent-[#06B2E1]"
-                />
-                <span>Cell</span>
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={selectType === "Range"}
-                  onChange={() => setSelectType("Range")}
-                  className="accent-[#06B2E1]"
-                />
-                <span>Range</span>
-              </label>
-            </div>
-          </div>
-
-          <TextField
-            label="Result Cell Location"
-            required
-            value={cellLocation}
-            onChange={(e) => setCellLocation(e.target.value)}
-            placeholder="e.g., A1, B2"
-            className="mt-4"
-          />
-          <div className="flex gap-4 mt-4">
-            <TextField
-              label="From"
-              required
-              value={fromRange}
-              onChange={(e) => setFromRange(e.target.value)}
-              placeholder="e.g., A1"
-              className="flex-1"
-            />
-            <TextField
-              label="To"
-              required
-              value={toRange}
-              onChange={(e) => setToRange(e.target.value)}
-              placeholder="e.g., B5"
-              className="flex-1"
-            />
-          </div>
-        </>
+      {mappedSoftware === "Excel" || mappedSoftware === "GoogleSheets" ? (
+        <TaskFormExcelSheets
+          values={form}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          taskNumber={taskNumber}
+          softwareOptions={softwareOptions}
+        />
+      ) : mappedSoftware === "Word" || mappedSoftware === "GoogleDoc" ? (
+        <TaskFormWordDocs
+          values={form}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          taskNumber={taskNumber}
+          softwareOptions={softwareOptions}
+        />
+      ) : mappedSoftware === "PPT" || mappedSoftware === "GoogleSlides" ? (
+        <TaskFormPowerpointSlides
+          values={form}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          taskNumber={taskNumber}
+          softwareOptions={softwareOptions}
+        />
+      ) : (
+        <div className="text-red-500">
+          Unsupported software type: {mappedSoftware}
+        </div>
       )}
-
-      <RichTextEditorField
-        label="Hint"
-        onChange={(value) => setHint(value)}
-        defaultValue={hint}
-      />
-
-      <div className="flex gap-4 mt-4">
-        <TextField
-          label="Skill Name"
-          required
-          value={skillName}
-          onChange={(e) => setSkillName(e.target.value)}
-          placeholder="e.g., SKI, SK2"
-          className="flex-1"
-        />
-        <TextField
-          label="Skill Score"
-          required
-          value={skillScore}
-          onChange={(e) => setSkillScore(e.target.value)}
-          placeholder="e.g., 45, 15"
-          className="flex-1"
-        />
-      </div>
-
-      <button
-        className="bg-[#06B2E1] text-white rounded-full px-6 py-3 mt-6"
-        onClick={handleSubmit}
-      >
-        Add Task
-      </button>
     </div>
   );
 };
