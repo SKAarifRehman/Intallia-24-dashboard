@@ -1,29 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAddTask } from "@/queries/simulationQueries";
 import { TaskFormExcelSheets } from "./TaskForms/TaskFormExcelSheets";
 import { TaskFormWordDocs } from "./TaskForms/TaskFormWordDocs";
 import { TaskFormPowerpointSlides } from "./TaskForms/TaskFormPowerpointSlides";
-import { X } from "lucide-react";
+import { X, Save } from "lucide-react";
 
 interface TaskFormProps {
+  simulationId: string;
   sectionId: string;
-  software: string; // this is something like 'S1'
+  software: string;
   taskNumber: number;
   onAddTask: (task: any) => void;
   onRemove: () => void;
   softwareOptions: { value: string; label: string }[];
+  setTaskCount: (count: number) => void;
 }
 
 export const TaskForm = ({
+  simulationId,
   sectionId,
   software,
   taskNumber,
   onAddTask,
   onRemove,
   softwareOptions,
+  setTaskCount,
 }: TaskFormProps) => {
   const addTaskMutation = useAddTask();
+  const storageKey = `taskCounts_${simulationId}`;
 
   const mappedSoftware =
     softwareOptions.find((opt) => opt.value === software)?.label || software;
@@ -43,6 +48,12 @@ export const TaskForm = ({
     objectName: "",
   });
 
+  useEffect(() => {
+    if (setTaskCount) {
+      setTaskCount(taskNumber);
+    }
+  }, [taskNumber, setTaskCount]);
+
   const handleChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -51,7 +62,7 @@ export const TaskForm = ({
     const now = new Date().toISOString();
     let header: any = {
       TaskId: "",
-      SectionId: sectionId,
+      SectionId: sectionId || undefined,
       Order: taskNumber,
       Description: form.description,
       CompanyId: "Intallia24",
@@ -59,21 +70,6 @@ export const TaskForm = ({
       CreateDate: now,
       ModifyBy: "Admin",
       ModifyDate: now,
-      Intallia1: null,
-      Intallia2: null,
-      Intallia3: null,
-      Intallia4: null,
-      Intallia5: null,
-      Intallia6: null,
-      Intallia7: null,
-      Intallia8: null,
-      Intallia9: null,
-      Intallia10: null,
-      Intallia11: null,
-      Intallia12: null,
-      Intallia13: null,
-      Intallia14: null,
-      Intallia15: null,
       SkillName: form.skillName,
       SkillScore: form.skillScore,
       Hint: form.hint,
@@ -143,10 +139,34 @@ export const TaskForm = ({
 
     try {
       const payload = buildPayload();
-      await addTaskMutation.mutateAsync(payload);
-      toast.success("Task added successfully");
 
-      onAddTask({ ...form, id: Date.now().toString() });
+      if (onAddTask) {
+        const taskWithId = {
+          ...payload,
+          id: Date.now().toString(),
+        };
+        onAddTask(taskWithId);
+      }
+
+      // ✅ Use simulation-specific key
+      const existingCounts = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      const currentCount = existingCounts[software] || 0;
+      const updatedCounts = {
+        ...existingCounts,
+        [software]: currentCount + 1,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(updatedCounts));
+
+      // ✅ Dispatch scoped event
+      const event = new CustomEvent("simulationTaskCountsUpdated", {
+        detail: {
+          simulationId,
+          counts: updatedCounts,
+        },
+      });
+      window.dispatchEvent(event);
+
+      toast.success("Task saved successfully");
 
       setForm({
         description: "",
@@ -163,13 +183,12 @@ export const TaskForm = ({
         objectName: "",
       });
     } catch (err) {
-      toast.error("Failed to add task.");
+      toast.error("Failed to save task.");
     }
   };
 
   return (
     <div className="bg-white rounded-lg p-6 border border-[#E5E5EA] mb-4 relative">
-      {/* Remove button (top-right) */}
       <button
         onClick={onRemove}
         className="absolute top-2 right-2 text-red-500 hover:text-red-700"
@@ -184,31 +203,33 @@ export const TaskForm = ({
         <TaskFormExcelSheets
           values={form}
           onChange={handleChange}
-          onSubmit={handleSubmit}
           taskNumber={taskNumber}
-          softwareOptions={softwareOptions}
         />
       ) : mappedSoftware === "Word" || mappedSoftware === "GoogleDoc" ? (
         <TaskFormWordDocs
           values={form}
           onChange={handleChange}
-          onSubmit={handleSubmit}
           taskNumber={taskNumber}
-          softwareOptions={softwareOptions}
         />
       ) : mappedSoftware === "PPT" || mappedSoftware === "GoogleSlides" ? (
         <TaskFormPowerpointSlides
           values={form}
           onChange={handleChange}
-          onSubmit={handleSubmit}
           taskNumber={taskNumber}
-          softwareOptions={softwareOptions}
         />
       ) : (
         <div className="text-red-500">
           Unsupported software type: {mappedSoftware}
         </div>
       )}
+
+      <button
+        className="bg-[#06B2E1] text-white flex rounded-full px-6 py-3 mt-6 items-center gap-2"
+        onClick={handleSubmit}
+      >
+        <Save size={16} />
+        Save Task
+      </button>
     </div>
   );
 };

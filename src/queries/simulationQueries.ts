@@ -61,8 +61,6 @@ export function useSimulationData(SimulationId: string, CompanyId: string) {
 export function useAddSection() {
   return useMutation({
     mutationFn: async (payload: { JSON: string }) => {
-      console.log("Adding section with payload:", payload);
-
       const result = await addSection(payload);
       return result;
     },

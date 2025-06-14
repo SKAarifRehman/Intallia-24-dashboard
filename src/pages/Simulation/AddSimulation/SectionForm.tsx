@@ -8,6 +8,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useSimulationStore } from "@/store/simulationStore";
 import { useAddSection } from "@/queries/simulationQueries";
 import { toast } from "sonner";
+import { log } from "console";
 
 // Zod schema for validation
 const schema = z.object({
@@ -28,6 +29,7 @@ interface SectionFormProps {
   setSelectedSoftware: (software: string) => void;
   onCreateSection?: () => void;
   existingSoftwareIds: string[]; // <-- Added prop for duplicate check
+  onSectionCreated?: (sectionData: any) => void; // New callback prop
 }
 
 export function SectionForm({
@@ -35,6 +37,7 @@ export function SectionForm({
   setSelectedSoftware,
   onCreateSection,
   existingSoftwareIds,
+  onSectionCreated
 }: SectionFormProps) {
   const { userID, companyId } = useAuthStore((state) => state);
   const { simulation, setSection } = useSimulationStore((state) => state);
@@ -67,7 +70,7 @@ export function SectionForm({
       JSON: JSON.stringify({
         Header: [
           {
-            SectionId: "",
+            SectionId: simulation?.SectionId || "",
             SimulationId: simulationId || simulation?.SimulationId || "",
             SoftwareId: formData.software,
             Title:
@@ -75,8 +78,8 @@ export function SectionForm({
                 ?.label || "",
             Order: "1",
             Link: "",
-            StudentFile: formData.studentFile,
-            JsonFile: formData.masterJson,
+            // StudentFile: formData.studentFile,
+            // JsonFile: formData.masterJson,
             CompanyId: companyId,
             CreateBy: userID,
             CreateDate: new Date().toISOString(),
@@ -96,10 +99,15 @@ export function SectionForm({
       }),
     };
 
+    console.log("Submitting section with payload:", payload);
+
     await addSection.mutateAsync(payload).then((res) => {
       if (res) {
-        setSection(res.data);
-        if (onCreateSection) onCreateSection();
+        setSection(res);
+        // if (onCreateSection) onCreateSection();
+        console.log("Res.data", res);
+
+        if (onSectionCreated) onSectionCreated(res); // Call new callback with response data
         toast.success("Section added successfully", {
           description: "The section was created successfully.",
         });
